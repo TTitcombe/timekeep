@@ -32,3 +32,19 @@ class TestChecks:
     def test_is_timeseries_returns_false_for_pandas_dataframe(self):
         df = pd.DataFrame({"A": np.random.random((10,)), "B": np.random.random((10,))})
         assert not is_timeseries(df)
+
+    def test_is_shape_returns_true_for_equal_shapes(self):
+        data = np.random.random((10, 5, 2))
+        assert is_shape(data, (10, 5, 2))
+
+    def test_is_shape_returns_false_for_non_equal_dims(self):
+        data = np.random.random((10, 5))
+        assert not is_shape(data, (10, 5, 2))
+
+    def test_is_shape_returns_false_for_non_equal_shapes(self):
+        data = np.random.random((10, 5, 2))
+        assert not is_shape(data, (10, 5, 3))
+
+    def test_is_shape_can_accept_placeholder_dims(self):
+        data = np.random.random((10, 8, 7))
+        assert is_shape(data, (-1, 8, 7))

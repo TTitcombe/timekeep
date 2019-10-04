@@ -18,4 +18,10 @@ def is_shape(data, shape):
     """
     Compare the shape of a dataset
     """
-    return data.shape == shape
+    if len(data.shape) != len(shape):
+        return False
+
+    shape_comparison = [
+        True if dim2 == -1 else dim1 == dim2 for dim1, dim2 in zip(data.shape, shape)
+    ]
+    return all(shape_comparison)

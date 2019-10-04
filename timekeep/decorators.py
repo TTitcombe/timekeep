@@ -9,6 +9,8 @@ def is_timeseries(func):
     def inner(*args, **kwargs):
         data = func(*args, **kwargs)
         result = tkc.is_timeseries(data)
+        if not result:
+            raise RuntimeError("Is not timeseries")
         # TODO what to do with result
         return data
 
@@ -20,6 +22,8 @@ def is_shape(shape):
         def inner(*args, **kwargs):
             data = func(*args, **kwargs)
             result = tkc.is_shape(data, shape)
+            if not result:
+                raise RuntimeError("Shapes do not match")
             # TODO what to do with result
             return data
 
