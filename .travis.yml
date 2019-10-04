@@ -1,0 +1,15 @@
+dist: bionic
+language: python
+python:
+  - "3.7"
+
+jobs:
+  include:
+    - stage: "Testing"
+      name: "Unit tests"
+      install:
+        - pip install black isort numpy pandas pytest
+      script:
+        - black --check timekeep
+        - isort -rc . -c -vb
+        - python -m pytest tests/
