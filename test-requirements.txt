@@ -1,0 +1,12 @@
+# Code cleaning
+black
+isort
+
+# Code
+numpy
+pandas
+
+# Testing
+codecov
+pytest
+pytest-cov
