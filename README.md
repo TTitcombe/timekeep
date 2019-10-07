@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/TTitcombe/timekeep.svg?branch=master)](https://travis-ci.com/TTitcombe/timekeep)
+[![codecov](https://codecov.io/gh/TTitcombe/timekeep/branch/master/graph/badge.svg)](https://codecov.io/gh/TTitcombe/timekeep)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # timekeep
 
