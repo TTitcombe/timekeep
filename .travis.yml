@@ -9,7 +9,10 @@ jobs:
       name: "Unit tests"
       install:
         - pip install black isort numpy pandas pytest
+        - pip install codecov pytest-cov
       script:
         - black --check timekeep
         - isort -rc . -c -vb
-        - python -m pytest tests/
+        - python -m pytest tests/ --cov=timekeep
+      after_success:
+        - codecov
