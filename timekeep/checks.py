@@ -31,7 +31,7 @@ def is_shape(data, shape):
     return data
 
 
-def has_no_nans(data):
+def none_missing(data):
     """
     Check that no NaN values are present in the data
     """

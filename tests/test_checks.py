@@ -53,15 +53,15 @@ class TestChecks:
         data = np.random.random((10, 8, 7))
         is_shape(data, (-1, 8, 7))
 
-    def test_has_no_nans_raises_if_has_a_single_nan(self):
+    def test_none_missing_raises_if_has_a_single_nan(self):
         data = np.random.random((5, 4, 3))
         data[0, -1, 0] = np.nan
         with pytest.raises(AssertionError):
-            has_no_nans(data)
+            none_missing(data)
 
-    def test_has_no_raises_does_not_raise_if_no_nans(self):
+    def test_none_missing_raises_does_not_raise_if_no_nans(self):
         data = np.random.random((5, 4, 3))
-        has_no_nans(data)
+        none_missing(data)
 
     def test_full_timeseries_raises_if_last_element_is_zero(self):
         data = np.random.random((5, 5, 3))

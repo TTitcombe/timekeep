@@ -52,3 +52,49 @@ class TestDecorators:
 
         with pytest.raises(AssertionError):
             data = inner_func()
+
+    def test_none_missing_does_not_raise_if_no_nans(self):
+        @none_missing
+        def inner_func():
+            return np.random.random((10, 10, 3))
+
+        data = inner_func()
+        assert not np.isnan(data).any()
+
+    def test_none_missing_raises_if_nans_present(self):
+        @none_missing
+        def inner_func():
+            data = np.random.random((10, 10, 3))
+            data[-1, -1, -1] = np.nan
+            return data
+
+        with pytest.raises(AssertionError):
+            data = inner_func()
+
+    def test_full_timeseries_does_not_raise_if_all_timeseries_continue_to_end(self):
+        @full_timeseries(0.0)
+        def inner_func():
+            return np.ones((10, 4, 2))
+
+        data = inner_func()
+        assert (data[:, -1, :] != 0.0).all()
+
+    def test_full_timeseries_can_accept_custom_empty_data_value(self):
+        empty_value = 1.0
+
+        @full_timeseries(empty_value)
+        def inner_func():
+            return np.zeros((10, 4, 2))
+
+        data = inner_func()
+        assert (data[:, -1, :] != empty_value).all()
+
+    def test_full_timeseries_raises_if_timeseries_different_length(self):
+        @full_timeseries(0.0)
+        def inner_func():
+            data = np.ones((10, 4, 2))
+            data[-1, -1, :] = 0.0
+            return data
+
+        with pytest.raises(AssertionError):
+            data = inner_func()

@@ -27,25 +27,22 @@ def is_shape(shape):
     return is_shape_decorator
 
 
-def convert_timeseries_input(func):
+def none_missing(func):
     def inner(*args, **kwargs):
-        x = args[1]  # self, then X
-        x = to_sklearn_dataset(x)
-        args = [args[i] if i != 1 else x for i in range(len(args))]
-
-        return func(*args, **kwargs)
+        data = func(*args, **kwargs)
+        tkc.none_missing(data)
+        return data
 
     return inner
 
 
-def accept_timeseries_input(cls):
-    """
-    A class decorator which alters sklearn BaseEstimator classes
-    to accept timeseries datasets as input.
-    """
-    cls.fit = convert_timeseries_input(cls.fit)
-    cls.transform = convert_timeseries_input(cls.transform)
-    cls.fit_transform = convert_timeseries_input(cls.fit_transform)
-    cls.predict = convert_timeseries_input(cls.predict)
+def full_timeseries(empty_value=0.0):
+    def full_timeseries_decorator(func):
+        def inner(*args, **kwargs):
+            data = func(*args, **kwargs)
+            tkc.full_timeseries(data, empty_value=empty_value)
+            return data
 
-    return cls
+        return inner
+
+    return full_timeseries_decorator
