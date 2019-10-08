@@ -3,7 +3,6 @@ black
 isort
 
 # Code
-numpy
 pandas
 
 # Testing
