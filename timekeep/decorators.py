@@ -46,3 +46,40 @@ def full_timeseries(empty_value=0.0):
         return inner
 
     return full_timeseries_decorator
+
+
+def at_least_n_datapoints(n):
+    def at_least_n_decorator(func):
+        def inner(*args, **kwargs):
+            data = func(*args, **kwargs)
+            tkc.at_least_n_datapoints(data, n)
+            return data
+
+        return inner
+
+    return at_least_n_decorator
+
+
+def fewer_than_n_datapoints(n):
+    def fewer_than_n_decorator(func):
+        def inner(*args, **kwargs):
+            data = func(*args, **kwargs)
+            tkc.fewer_than_n_datapoints(data, n)
+            return data
+
+        return inner
+
+    return fewer_than_n_decorator
+
+
+def datapoints_in_range(n_lower, n_upper):
+    def datapoints_in_range_decorator(func):
+        def inner(*args, **kwargs):
+            data = func(*args, **kwargs)
+            tkc.at_least_n_datapoints(data, n_lower)
+            tkc.fewer_than_n_datapoints(data, n_upper)
+            return data
+
+        return inner
+
+    return datapoints_in_range_decorator

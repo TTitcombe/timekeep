@@ -49,3 +49,21 @@ def full_timeseries(data, empty_value=0.0):
     else:
         assert not (data[:, -1, :] == empty_value).any()
     return data
+
+
+def at_least_n_datapoints(data, n):
+    """
+    Check that data has n or more datapoints (first dimension).
+    NOTE: This check is in the range [n,). It includes n
+    """
+    assert data.shape[0] >= n
+    return data
+
+
+def fewer_than_n_datapoints(data, n):
+    """
+    Check that data has fewer than n datapoints (first dimension).
+    NOTE: This check is in the range [1, n). It does not include n
+    """
+    assert data.shape[0] < n
+    return data

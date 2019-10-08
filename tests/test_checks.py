@@ -85,3 +85,36 @@ class TestChecks:
         data = np.random.random((5, 5, 2))
         data[:, -2, :] = 0.0  # should not raise
         full_timeseries(data)
+
+    def test_at_least_n_raises_if_fewer_than_n_datapoint(self):
+        data = np.random.random((5, 100, 1))
+
+        with pytest.raises(AssertionError):
+            at_least_n_datapoints(data, 6)
+
+    def test_at_least_n_does_not_raise_if_more_than_n_datapoints(self):
+        data = np.random.random((5, 100, 1))
+
+        at_least_n_datapoints(data, 4)
+
+    def test_at_least_n_does_not_raise_if_n_datapoints(self):
+        data = np.random.random((5, 100, 1))
+
+        at_least_n_datapoints(data, 5)
+
+    def test_fewer_than_n_raises_if_more_than_n_datapoints(self):
+        data = np.random.random((5, 100, 1))
+
+        with pytest.raises(AssertionError):
+            fewer_than_n_datapoints(data, 4)
+
+    def test_fewer_than_n_does_not_raise_if_fewer_than_n_datapoints(self):
+        data = np.random.random((5, 100, 1))
+
+        fewer_than_n_datapoints(data, 6)
+
+    def test_fewer_than_n_raises_if_n_datapoints(self):
+        data = np.random.random((5, 100, 1))
+
+        with pytest.raises(AssertionError):
+            fewer_than_n_datapoints(data, 5)

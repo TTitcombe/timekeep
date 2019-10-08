@@ -98,3 +98,80 @@ class TestDecorators:
 
         with pytest.raises(AssertionError):
             data = inner_func()
+
+    def test_at_least_n_raises_if_fewer_than_n(self):
+        @at_least_n_datapoints(5)
+        def inner_func():
+            return np.random.random((4, 10, 1))
+
+        with pytest.raises(AssertionError):
+            inner_func()
+
+    def test_at_least_n_does_not_raise_if_n_or_more(self):
+        @at_least_n_datapoints(5)
+        def inner_func(n):
+            return np.random.random((n, 10, 1))
+
+        inner_func(5)
+        inner_func(6)
+
+    def test_fewer_than_n_raises_if_n(self):
+        @fewer_than_n_datapoints(5)
+        def inner_func():
+            return np.random.random((5, 100, 2))
+
+        with pytest.raises(AssertionError):
+            inner_func()
+
+    def test_fewer_than_n_raises_if_more_than_n(self):
+        @fewer_than_n_datapoints(5)
+        def inner_func():
+            return np.random.random((6, 100, 2))
+
+        with pytest.raises(AssertionError):
+            inner_func()
+
+    def test_fewer_than_n_does_not_raise_if_fewer_than_n(self):
+        @fewer_than_n_datapoints(5)
+        def inner_func():
+            return np.random.random((4, 100, 2))
+
+        inner_func()
+
+    def test_datapoints_in_range_raises_if_n_lower_than_range(self):
+        @datapoints_in_range(5, 10)
+        def inner_func():
+            return np.random.random((4, 100, 2))
+
+        with pytest.raises(AssertionError):
+            inner_func()
+
+    def test_datapoints_in_range_raises_if_n_greater_than_range(self):
+        @datapoints_in_range(5, 10)
+        def inner_func():
+            return np.random.random((11, 100, 2))
+
+        with pytest.raises(AssertionError):
+            inner_func()
+
+    def test_datapoints_in_range_raises_if_n_equal_to_upper_bound(self):
+        @datapoints_in_range(5, 10)
+        def inner_func():
+            return np.random.random((10, 100, 2))
+
+        with pytest.raises(AssertionError):
+            inner_func()
+
+    def test_datapoints_in_range_does_not_raise_if_n_equal_to_lower_bound(self):
+        @datapoints_in_range(5, 10)
+        def inner_func():
+            return np.random.random((5, 100, 2))
+
+        inner_func()
+
+    def test_datapoints_in_range_does_not_raise_if_n_in_range(self):
+        @datapoints_in_range(5, 10)
+        def inner_func():
+            return np.random.random((7, 100, 2))
+
+        inner_func()
