@@ -1,6 +1,7 @@
 # timekeep
 [![Build Status](https://travis-ci.com/TTitcombe/timekeep.svg?branch=master)](https://travis-ci.com/TTitcombe/timekeep)
 [![codecov](https://codecov.io/gh/TTitcombe/timekeep/branch/master/graph/badge.svg)](https://codecov.io/gh/TTitcombe/timekeep)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/TTitcombe/timekeep/master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A python package for defensive timeseries analytics.
@@ -40,7 +41,8 @@ def will_raise():
   return np.random.random((10, 2))
 ```
 
-See the [`examples`][examples] folder for more.
+See the [`examples`][examples] folder for more. You can launch this repo on [`binder`][binder_timekeep] 
+and run the examples without any installation.
 
 ### How to install
 `timekeep` is currently not pip installable. To package a version locally:
@@ -51,6 +53,7 @@ See the [`examples`][examples] folder for more.
 ### Contributing
 Any and all help welcome. Please see the [contributing guide][contributing].
 
+[binder]: https://mybinder.org/v2/gh/TTitcombe/timekeep/master
 [engarde]: https://github.com/engarde-dev/engarde
 [pandas]: https://pandas.pydata.org/
 [sklearn]: https://scikit-learn.org/stable/index.html
