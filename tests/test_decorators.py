@@ -175,3 +175,21 @@ class TestDecorators:
             return np.random.random((7, 100, 2))
 
         inner_func()
+
+    def test_uniform_length_does_not_raise_if_no_missing_values(self):
+        @uniform_length
+        def inner_func():
+            return np.random.random((10, 25, 3))
+
+        inner_func()
+
+    def test_uniform_length_raises_if_datapoints_at_different_lengths(self):
+        @uniform_length
+        def inner_func():
+            data = np.random.random((10, 25, 3))
+            data[0, -1, :] = np.nan
+            data[1, -2:, :] = np.nan
+            return data
+
+        with pytest.raises(AssertionError):
+            inner_func()

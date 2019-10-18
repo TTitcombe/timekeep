@@ -3,6 +3,8 @@ Checks to perform on data
 """
 import numpy as np
 
+from .utility import find_stop_indices
+
 
 def is_timeseries(data):
     """
@@ -14,7 +16,6 @@ def is_timeseries(data):
     """
 
     assert len(data.shape) == 3
-    return data
 
 
 def is_shape(data, shape):
@@ -28,15 +29,12 @@ def is_shape(data, shape):
     ]
     assert all(shape_comparison)
 
-    return data
-
 
 def none_missing(data):
     """
     Check that no NaN values are present in the data
     """
     assert not np.isnan(data).any()
-    return data
 
 
 def full_timeseries(data, empty_value=0.0):
@@ -48,7 +46,6 @@ def full_timeseries(data, empty_value=0.0):
         assert not np.isnan(data).any()
     else:
         assert not (data[:, -1, :] == empty_value).any()
-    return data
 
 
 def at_least_n_datapoints(data, n):
@@ -57,7 +54,6 @@ def at_least_n_datapoints(data, n):
     NOTE: This check is in the range [n,). It includes n
     """
     assert data.shape[0] >= n
-    return data
 
 
 def fewer_than_n_datapoints(data, n):
@@ -66,4 +62,12 @@ def fewer_than_n_datapoints(data, n):
     NOTE: This check is in the range [1, n). It does not include n
     """
     assert data.shape[0] < n
-    return data
+
+
+def check_uniform_length(data):
+    """
+    Check that each data point in a timeseries ends at the same time point.
+    """
+    lengths = find_stop_indices(data, empty_value=np.nan)
+    print(lengths)
+    assert np.unique(lengths).size == 1

@@ -7,5 +7,5 @@ setup(
     author="Tom Titcombe",
     author_email="t.j.titcombe@gmail.com",
     packages=["timekeep"],
-    install_requires=["numpy", "tslearn"],
+    install_requires=["numpy", "sklearn", "tslearn"],
 )

@@ -83,3 +83,12 @@ def datapoints_in_range(n_lower, n_upper):
         return inner
 
     return datapoints_in_range_decorator
+
+
+def uniform_length(func):
+    def inner(*args, **kwargs):
+        data = func(*args, **kwargs)
+        tkc.check_uniform_length(data)
+        return data
+
+    return inner
