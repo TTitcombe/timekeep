@@ -3,16 +3,10 @@ from setuptools import setup
 import timekeep
 
 
-def long_desc():
-    with open("LONG_DESCRIPTION.rst") as f:
-        return f.read()
-
-
 setup(
     name="timekeep",
     version=timekeep.__version__,
     description="Defensive timeseries analytics",
-    long_description=long_desc(),
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
