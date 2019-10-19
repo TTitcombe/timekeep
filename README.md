@@ -53,7 +53,7 @@ and run the examples without any installation.
 ### Contributing
 Any and all help welcome. Please see the [contributing guide][contributing].
 
-[binder]: https://mybinder.org/v2/gh/TTitcombe/timekeep/master
+[binder_timekeep]: https://mybinder.org/v2/gh/TTitcombe/timekeep/master
 [engarde]: https://github.com/engarde-dev/engarde
 [pandas]: https://pandas.pydata.org/
 [sklearn]: https://scikit-learn.org/stable/index.html
