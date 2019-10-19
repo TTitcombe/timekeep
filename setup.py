@@ -1,5 +1,7 @@
 from setuptools import setup
 
+import timekeep
+
 
 def long_desc():
     with open("LONG_DESCRIPTION.rst") as f:
@@ -8,7 +10,7 @@ def long_desc():
 
 setup(
     name="timekeep",
-    version="0.1",
+    version=timekeep.__version__,
     description="Defensive timeseries analytics",
     long_description=long_desc(),
     classifiers=[
