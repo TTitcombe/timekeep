@@ -4,10 +4,24 @@ Functions for managing timeseries
 import numpy as np
 
 
-def find_stop_indices(data: np.ndarray, empty_value: int = 0.0) -> np.ndarray:
+def find_stop_indices(data: np.ndarray, empty_value=np.nan) -> np.ndarray:
     """
     Find the indices in the time dimension at which each timeseries in data
-    ends. Default empty value is 0.0
+    ends.
+
+    Empty values in the data are assumed to be np.nan by default
+
+    Parameters
+    ----------
+    data : np.ndarray
+        The data to check
+    empty_value
+        The value which denotes empty data. np.nan by default.
+
+    Returns
+    -------
+    np.ndarray
+        An array containing the length of each timeseries in data
     """
     n, t, d = data.shape
     end_indices = np.empty((n,))
@@ -36,8 +50,5 @@ def find_stop_indices(data: np.ndarray, empty_value: int = 0.0) -> np.ndarray:
 
 
 def uniform_timeseries_length(data: np.ndarray, empty_value: int = 0.0) -> bool:
-    """
-    Identify whether or not the timeseries stop at the same time index.
-    """
     end_indices = find_stop_indices(data, empty_value=empty_value)
     return np.unique(end_indices).size == 1

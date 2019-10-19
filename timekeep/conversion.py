@@ -32,8 +32,17 @@ def convert_output_to_timeseries(func):
 
 def timeseries_transformer(cls: TransformerMixin) -> TransformerMixin:
     """
-    A class decorator which alters sklearn Transformer classes
-    to accept timeseries datasets as input.
+    Augment sklearn.TransformerMixin classes to accept timeseries datasets
+
+    Parameters
+    ----------
+    cls : TransformerMixin
+        The class to augment
+
+    Returns
+    -------
+    TransformerMixin
+        The input class, which now accepts timeseries datasets as input
     """
     cls.fit = convert_timeseries_input(cls.fit)
     cls.transform = convert_timeseries_input(cls.transform)

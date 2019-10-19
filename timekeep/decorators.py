@@ -1,8 +1,6 @@
 """
 Decorators for checking data structure
 """
-from tslearn.utils import to_sklearn_dataset
-
 import timekeep.checks as tkc
 
 

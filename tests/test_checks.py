@@ -63,17 +63,17 @@ class TestChecks:
         data = np.random.random((5, 4, 3))
         none_missing(data)
 
-    def test_full_timeseries_raises_if_last_element_is_zero(self):
-        data = np.random.random((5, 5, 3))
-        data[-1, -1, 1] = 0.0
-        with pytest.raises(AssertionError):
-            full_timeseries(data)
-
-    def test_full_timeseries_can_accept_nan_as_empty_value(self):
+    def test_full_timeseries_raises_if_last_element_is_nan(self):
         data = np.random.random((5, 5, 3))
         data[-1, -1, 1] = np.nan
         with pytest.raises(AssertionError):
-            full_timeseries(data, empty_value=np.nan)
+            full_timeseries(data)
+
+    def test_full_timeseries_can_accept_zero_as_empty_value(self):
+        data = np.random.random((5, 5, 3))
+        data[-1, -1, 1] = 0.0
+        with pytest.raises(AssertionError):
+            full_timeseries(data, empty_value=0.0)
 
     def test_full_timeseries_can_accept_different_empty_value(self):
         data = np.random.random((5, 5, 3))
@@ -83,7 +83,12 @@ class TestChecks:
 
     def test_full_timeseries_does_not_raise_if_no_empty_values_at_end(self):
         data = np.random.random((5, 5, 2))
-        data[:, -2, :] = 0.0  # should not raise
+        data[:, -1, :] = 0.0  # should not raise as empty_value is NaN
+        full_timeseries(data)
+
+    def test_full_timeseries_does_not_raise_if_empty_values_occur_before_end(self):
+        data = np.random.random((5, 5, 2))
+        data[:, -2, :] = np.nan
         full_timeseries(data)
 
     def test_at_least_n_raises_if_fewer_than_n_datapoint(self):
