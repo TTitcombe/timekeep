@@ -2,7 +2,6 @@ from setuptools import setup
 
 import timekeep
 
-
 setup(
     name="timekeep",
     version=timekeep.__version__,

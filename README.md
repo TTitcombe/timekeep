@@ -45,10 +45,11 @@ See the [`examples`][examples] folder for more. You can launch this repo on [`bi
 and run the examples without any installation.
 
 ### How to install
-`timekeep` is currently not pip installable. To package a version locally:
-1. Clone this repo
-2. Navigate to the repo in the command line
-3. Run `pip install .`
+`timekeep` is available from [PyPi][pypi]. Run
+```bash
+pip install timekeep
+```
+to install.
 
 ### Contributing
 Any and all help welcome. Please see the [contributing guide][contributing].
@@ -56,6 +57,7 @@ Any and all help welcome. Please see the [contributing guide][contributing].
 [binder_timekeep]: https://mybinder.org/v2/gh/TTitcombe/timekeep/master
 [engarde]: https://github.com/engarde-dev/engarde
 [pandas]: https://pandas.pydata.org/
+[pypi]: https://pypi.org/project/timekeep/0.1/
 [sklearn]: https://scikit-learn.org/stable/index.html
 
 [contributing]: CONTRIBUTING.md
