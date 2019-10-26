@@ -30,3 +30,38 @@ class TestTimeseriesTransformer:
         estimator = DummyTransformer(n_components=2)
         data = estimator.fit_transform(np.random.random((10, 15, 10)))
         assert data.shape == (10, 2)
+
+    def test_convert_timeseries_input_works_on_functions(self):
+        def load(data):
+            return data
+
+        func = convert_timeseries_input(load)
+        returned_data = func(np.random.random((10, 4, 2)))
+        assert returned_data.shape == (10, 8)
+
+    def test_convert_output_to_timeseries_returns_timeseries(self):
+        @convert_output_to_timeseries
+        def load():
+            return np.random.random((10, 5, 2))
+
+        # This should return a timeseries dataset as normal
+        returned_data = load()
+        assert returned_data.shape == (10, 5, 2)
+
+    def test_convert_output_to_timeseries_converts_two_dimensional_output(self):
+        @convert_output_to_timeseries
+        def load():
+            return np.random.random((10, 5))
+
+        returned_data = load()
+        assert returned_data.shape == (10, 5, 1)
+
+    def test_convert_output_to_timeseries_raises_if_output_is_more_than_three_dimensional(
+        self
+    ):
+        @convert_output_to_timeseries
+        def load():
+            return np.random.random((5, 4, 3, 2))
+
+        with pytest.raises(AssertionError):
+            load()

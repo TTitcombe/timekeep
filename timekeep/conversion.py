@@ -8,12 +8,15 @@ from tslearn.utils import to_sklearn_dataset, to_time_series_dataset
 
 def convert_timeseries_input(func):
     def inner(*args, **kwargs):
-        assert len(args) >= 2
-        x = args[1]  # self, then X
-        assert isinstance(x, np.ndarray)
+        dim = 0
+        x = args[dim]  # For functions, x should be first argument
+        if not isinstance(x, np.ndarray):
+            dim = 1
+            x = args[dim]  # For methods, arguments are (self, x, ...)
+            assert isinstance(x, np.ndarray)
 
         x = to_sklearn_dataset(x)
-        args = [args[i] if i != 1 else x for i in range(len(args))]
+        args = [args[i] if i != dim else x for i in range(len(args))]
 
         return func(*args, **kwargs)
 
@@ -23,8 +26,11 @@ def convert_timeseries_input(func):
 def convert_output_to_timeseries(func):
     def inner(*args, **kwargs):
         data = func(*args, **kwargs)
-        assert len(data.shape) == 2
+        if len(data.shape) == 3:
+            return data
 
+        # If it's not 2-dimensional, we can't handle it
+        assert len(data.shape) == 2
         return to_time_series_dataset(data)
 
     return inner
