@@ -26,6 +26,10 @@ def convert_timeseries_input(func):
 def convert_output_to_timeseries(func):
     def inner(*args, **kwargs):
         data = func(*args, **kwargs)
+        if len(data.shape) == 3:
+            return data
+
+        # If it's not 2-dimensional, we can't handle it
         assert len(data.shape) == 2
         return to_time_series_dataset(data)
 
