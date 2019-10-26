@@ -30,3 +30,11 @@ class TestTimeseriesTransformer:
         estimator = DummyTransformer(n_components=2)
         data = estimator.fit_transform(np.random.random((10, 15, 10)))
         assert data.shape == (10, 2)
+
+    def test_convert_timeseries_input_works_on_functions(self):
+        def load(data):
+            return data
+
+        func = convert_timeseries_input(load)
+        returned_data = func(np.random.random((10, 4, 2)))
+        assert returned_data.shape == (10, 8)
