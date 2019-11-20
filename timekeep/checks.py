@@ -2,13 +2,14 @@
 Checks to perform on data
 """
 import numpy as np
+import pandas as pd
 
 from .utility import find_stop_indices
 
 
-def is_timeseries(data):
+def is_timeseries_dataset(data):
     """
-    Check if data is in a timeseries format.
+    Check if data is in tslearn-style timeseries format.
 
     Timeseries data has three dimensions:
         N - the number of data points
@@ -27,6 +28,78 @@ def is_timeseries(data):
     """
 
     assert len(data.shape) == 3
+
+
+def is_flat_dataset(data):
+    """
+    Check if data is tsfresh-style flat dataframe format.
+
+    Flat dataframes are pandas DataFrame object with the
+    following columns:
+        id - The id of the timeseries to which the datapoint relates
+        time - Time value of the datapoint
+    There can be any number of "value" columns relating to different parameters
+    of the timeseries
+
+    Parameters
+    ----------
+    data
+        The data to check
+
+    Raises
+    ------
+    AssertionError
+        data is not a pandas DataFrame
+        data does not have more than 2 columns
+        data does not have an "id" column
+        data does not have a "time" column
+
+    Notes
+    -----
+    https://tsfresh.readthedocs.io/en/latest/text/data_formats.html
+    """
+    assert isinstance(data, pd.DataFrame)
+    assert data.shape[1] > 2
+    assert "id" in data.columns
+    assert "time" in data.columns
+
+
+def is_stacked_dataset(data):
+    """
+    Check if data is tsfresh-style stacked dataframe format.
+
+    Stacked dataframes are pandas DataFrame object with the
+    following columns:
+        id - The id of the timeseries to which the datapoint relates
+        time - Time value of the datapoint
+        kind - The value to which the datapoint relates
+        value - The value of the datapoint
+
+    Parameters
+    ----------
+    data
+        The data to check
+
+    Raises
+    ------
+    AssertionError
+        data is not a pandas DataFrame
+        data does not have 4 columns
+        data does not have an "id" column
+        data does not have a "time" column
+        data does not have a "kind" column
+        data doe not have a "value" column
+
+    Notes
+    -----
+    https://tsfresh.readthedocs.io/en/latest/text/data_formats.html
+    """
+    assert isinstance(data, pd.DataFrame)
+    assert data.shape[1] == 4
+    assert "id" in data.columns
+    assert "time" in data.columns
+    assert "kind" in data.columns
+    assert "value" in data.columns
 
 
 def is_shape(data, shape):

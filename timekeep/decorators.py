@@ -4,10 +4,28 @@ Decorators for checking data structure
 import timekeep.checks as tkc
 
 
-def is_timeseries(func):
+def is_timeseries_dataset(func):
     def inner(*args, **kwargs):
         data = func(*args, **kwargs)
-        tkc.is_timeseries(data)
+        tkc.is_timeseries_dataset(data)
+        return data
+
+    return inner
+
+
+def is_flat_dataset(func):
+    def inner(*args, **kwargs):
+        data = func(*args, **kwargs)
+        tkc.is_flat_dataset(data)
+        return data
+
+    return inner
+
+
+def is_stacked_dataset(func):
+    def inner(*args, **kwargs):
+        data = func(*args, **kwargs)
+        tkc.is_stacked_dataset(data)
         return data
 
     return inner
