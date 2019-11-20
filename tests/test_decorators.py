@@ -10,7 +10,7 @@ from timekeep.decorators import *
 
 class TestDecorators:
     def test_is_timeseries_returns_data_if_timeseries_shape(self):
-        @is_timeseries
+        @is_timeseries_dataset
         def inner_func():
             return np.random.random((2, 10, 1))
 
@@ -19,12 +19,72 @@ class TestDecorators:
         assert data.shape == (2, 10, 1)
 
     def test_is_timeseries_raises_if_data_not_timeseries_shape(self):
-        @is_timeseries
+        @is_timeseries_dataset
         def inner_func():
             return np.random.random((2, 10))
 
         with pytest.raises(AssertionError):
             data = inner_func()
+
+    def test_is_flat_dataset_raises_if_data_is_not_pandas_dataframe(self):
+        @is_flat_dataset
+        def inner_func():
+            return np.random.random((15, 3))
+
+        with pytest.raises(AssertionError):
+            data = inner_func()
+
+    def test_is_flat_dataset_raises_if_data_has_fewer_than_three_columns(self):
+        @is_flat_dataset
+        def inner_func():
+            return pd.DataFrame({"id": [0, 1], "time": [0, 0]})
+
+        with pytest.raises(AssertionError):
+            data = inner_func()
+
+    def test_is_flat_dataset_returns_data_if_flat_dataset(self):
+        @is_flat_dataset
+        def inner_func():
+            return pd.DataFrame({"id": [0, 1], "time": [0, 0], "value": [5, 4]})
+
+        data = inner_func()
+        assert data.shape == (2, 3)
+        assert list(data.columns) == ["id", "time", "value"]
+
+    def test_is_stacked_dataset_raises_if_data_is_not_pandas_dataframe(self):
+        @is_stacked_dataset
+        def inner_func():
+            return np.random.random((15, 4))
+
+        with pytest.raises(AssertionError):
+            data = inner_func()
+
+    def test_is_stacked_dataset_raises_if_data_does_not_have_four_columns(self):
+        @is_stacked_dataset
+        def inner_func():
+            return pd.DataFrame(
+                {
+                    "id": [0, 1],
+                    "time": [0, 0],
+                    "kind": [1, 1],
+                    "value": [5, 4],
+                    "another_col": [1, 1],
+                }
+            )
+
+        with pytest.raises(AssertionError):
+            data = inner_func()
+
+    def test_is_stacked_dataset_returns_data_if_stacked_dataset(self):
+        @is_stacked_dataset
+        def inner_func():
+            return pd.DataFrame(
+                {"id": [0, 1], "time": [0, 0], "kind": [1, 1], "value": [5, 4]}
+            )
+
+        data = inner_func()
+        assert data.shape == (2, 4)
+        assert list(data.columns) == ["id", "time", "kind", "value"]
 
     def test_is_shape_returns_data_if_shapes_match(self):
         @is_shape((1, 2, 3))
