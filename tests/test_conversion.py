@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 from sklearn.decomposition import PCA
 
+from timekeep._errors import TimekeepCheckError
 from timekeep.conversion import *
 
 
@@ -63,5 +64,5 @@ class TestTimeseriesTransformer:
         def load():
             return np.random.random((5, 4, 3, 2))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             load()
