@@ -2,10 +2,12 @@
 Functions for converting between data formats
 """
 import numpy as np
+import pandas as pd
 from sklearn.base import TransformerMixin
 from tslearn.utils import to_sklearn_dataset, to_time_series_dataset
 
 from ._errors import TimekeepCheckError
+from .checks import is_flat_dataset, is_stacked_dataset, is_timeseries_dataset
 
 
 def convert_timeseries_input(func):
@@ -61,3 +63,81 @@ def timeseries_transformer(cls: TransformerMixin) -> TransformerMixin:
     cls.fit_transform = convert_timeseries_input(cls.fit_transform)
 
     return cls
+
+
+# ----- Format conversion ----- #
+def to_flat_dataset(data):
+    try:
+        is_flat_dataset(data)  # will raise AssertionError if not
+        return data
+    except AssertionError:
+        pass
+
+    try:
+        is_stacked_dataset(data)  # will raise AssertionError if not
+        for col_name in np.unique(data["kind"]):
+            data[str(col_name)] = data.loc[data.loc[:, "kind"] == col_name, "value"]
+        return data.drop(["kind", "value"], axis=1)
+    except AssertionError:
+        pass
+
+    try:
+        is_timeseries_dataset(data)  # will raise AssertionError if not
+        n, t, d = data.shape
+        id_ = np.tile(np.arange(n), t)
+        time_ = np.tile(np.arange(t), n)
+        values_ = data.reshape(n*t, d)  # check if this reshape is correct
+        df = pd.DataFrame({
+            "id": id_,
+            "time": time_,
+        })
+        for value in range(d):
+            df[str(value)] = values_[:, value]
+
+        return df
+    except AssertionError:
+        pass
+
+    raise ValueError("Did not recognise data of type {}. Cannot convert to flat dataset".format(type(data)))
+
+
+def to_stacked_dataset(data):
+    try:
+        is_flat_dataset(data)
+        d = data.shape[1] - 2
+        id_ = np.tile(data["id"].to_numpy(), d)
+        time_ = np.tile(data["time"].to_numpy(), d)
+        kind_ = np.repeat(np.array([col for col in data.columns if col not in ("time", "id")]), data.shape[0])
+        values_ = data[[col for col in data.columns if col not in ("time", "id")]].to_numpy().flatten()
+
+        return pd.DataFrame({"id": id_,
+                             "time": time_,
+                             "kind": kind_,
+                             "value": values_})
+    except AssertionError:
+        pass
+
+    try:
+        is_stacked_dataset(data)
+        return data
+    except AssertionError:
+        pass
+
+    try:
+        is_timeseries_dataset(data)  # will raise AssertionError if not
+        n, t, d = data.shape
+        id_ = np.tile(np.arange(n), t*d)
+        time_ = np.tile(np.arange(t), n*d)
+        kind_ = np.repeat(np.arange(d), n*t)
+        values_ = data.flatten()  # check if this reshape is correct
+        return pd.DataFrame({
+                "id": id_,
+                "time": time_,
+                "kind": kind_,
+                "value": values_
+        })
+
+    except AssertionError:
+        pass
+
+    raise ValueError("Did not recognise data of type {}. Cannot convert to stacked dataset".format(type(data)))
