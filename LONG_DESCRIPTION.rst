@@ -15,7 +15,7 @@ To check your data assumptions, simply do::
     >>>     pass
 
 If the data returned from load_my_data either has NaNs or does not have the shape
-(X, 100, 2), an AssertionError will be raised. timekeep's decorators stop you
+(X, 100, 2), an TimekeepCheckError will be raised. timekeep's decorators stop you
 from having to add messy assertions into your code.
 
 To interface timeseries data with, for example, sklearn classes, do::

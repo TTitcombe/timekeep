@@ -20,7 +20,7 @@ install:
   - python setup.py install
 script:
   - black --check timekeep
-  - isort -rc . -c
+  - isort -rc timekeep -c -vb
   - python -m pytest tests/ --cov=timekeep  --cov-append
 after_success:
   - codecov

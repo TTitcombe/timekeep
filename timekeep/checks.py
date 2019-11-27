@@ -4,6 +4,7 @@ Checks to perform on data
 import numpy as np
 import pandas as pd
 
+from ._errors import TimekeepCheckError
 from .utility import find_stop_indices
 
 
@@ -23,11 +24,16 @@ def is_timeseries_dataset(data):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         If the data shape does not have length 3
     """
 
-    assert len(data.shape) == 3
+    if not len(data.shape) == 3:
+        raise TimekeepCheckError(
+            "is_timeseries_dataset: data of shape {} has {} axes, not 3".format(
+                data.shape, len(data.shape)
+            )
+        )
 
 
 def is_flat_dataset(data):
@@ -48,7 +54,7 @@ def is_flat_dataset(data):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         data is not a pandas DataFrame
         data does not have more than 2 columns
         data does not have an "id" column
@@ -58,10 +64,24 @@ def is_flat_dataset(data):
     -----
     https://tsfresh.readthedocs.io/en/latest/text/data_formats.html
     """
-    assert isinstance(data, pd.DataFrame)
-    assert data.shape[1] > 2
-    assert "id" in data.columns
-    assert "time" in data.columns
+    if not isinstance(data, pd.DataFrame):
+        raise TimekeepCheckError(
+            "is_flat_dataset: data of type {} is not pandas.DataFrame".format(
+                type(data)
+            )
+        )
+
+    if not data.shape[1] > 2:
+        raise TimekeepCheckError(
+            "is_flat_dataset: data must have at least "
+            "2 columns; data has {}".format(data.shape[1])
+        )
+
+    if "id" not in data.columns:
+        raise TimekeepCheckError("is_flat_dataset: data does not contain 'id' column")
+
+    if "time" not in data.columns:
+        raise TimekeepCheckError("is_flat_dataset: data does not contain 'time' column")
 
 
 def is_stacked_dataset(data):
@@ -82,7 +102,7 @@ def is_stacked_dataset(data):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         data is not a pandas DataFrame
         data does not have 4 columns
         data does not have an "id" column
@@ -94,12 +114,39 @@ def is_stacked_dataset(data):
     -----
     https://tsfresh.readthedocs.io/en/latest/text/data_formats.html
     """
-    assert isinstance(data, pd.DataFrame)
-    assert data.shape[1] == 4
-    assert "id" in data.columns
-    assert "time" in data.columns
-    assert "kind" in data.columns
-    assert "value" in data.columns
+    if not isinstance(data, pd.DataFrame):
+        raise TimekeepCheckError(
+            "is_stacked_dataset: data of type {} is not pandas.Dataframe".format(
+                type(data)
+            )
+        )
+
+    if not data.shape[1] == 4:
+        raise TimekeepCheckError(
+            "is_stacked_dataset: data must have 4 columns; data has {}".format(
+                data.shape[1]
+            )
+        )
+
+    if "id" not in data.columns:
+        raise TimekeepCheckError(
+            "is_stacked_dataset: data does not contain 'id' column"
+        )
+
+    if "time" not in data.columns:
+        raise TimekeepCheckError(
+            "is_stacked_dataset: data does not contain 'time' column"
+        )
+
+    if "kind" not in data.columns:
+        raise TimekeepCheckError(
+            "is_stacked_dataset: data does not contain 'kind' column"
+        )
+
+    if "value" not in data.columns:
+        raise TimekeepCheckError(
+            "is_stacked_dataset: data does not contain 'value' column"
+        )
 
 
 def is_shape(data, shape):
@@ -118,15 +165,24 @@ def is_shape(data, shape):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         If the data shape does not match provided shape
     """
-    assert len(data.shape) == len(shape)
+    if not len(data.shape) == len(shape):
+        raise TimekeepCheckError(
+            "is_shape: data does not have correct number of axes; "
+            "data has {} axes".format(len(data.shape))
+        )
 
     shape_comparison = [
         True if dim2 == -1 else dim1 == dim2 for dim1, dim2 in zip(data.shape, shape)
     ]
-    assert all(shape_comparison)
+    if not all(shape_comparison):
+        raise TimekeepCheckError(
+            "is_shape: data has shape {}; does not match shape {}".format(
+                data.shape, shape
+            )
+        )
 
 
 def none_missing(data):
@@ -140,10 +196,11 @@ def none_missing(data):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         If data contain any NaN values
     """
-    assert not np.isnan(data).any()
+    if np.isnan(data).any():
+        raise TimekeepCheckError("none_missing: data contains NaN values")
 
 
 def full_timeseries(data, empty_value=np.nan):
@@ -163,14 +220,16 @@ def full_timeseries(data, empty_value=np.nan):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         If empty values are present at the end of one or
         more timeseries in the data"""
     last_data = data[:, -1, :]
     if np.isnan(empty_value):
-        assert not np.isnan(last_data).any()
+        if np.isnan(last_data).any():
+            raise TimekeepCheckError("full_timeseries: timeseries are not full")
     else:
-        assert not (last_data == empty_value).any()
+        if (last_data == empty_value).any():
+            raise TimekeepCheckError("full_timeseries: timeseries are not full")
 
 
 def at_least_n_datapoints(data, n):
@@ -186,10 +245,14 @@ def at_least_n_datapoints(data, n):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         If data has fewer than n datapoints
     """
-    assert data.shape[0] >= n
+    if not data.shape[0] >= n:
+        raise TimekeepCheckError(
+            "at_least_n_datapoints: data has fewer than n datapoints; "
+            "data has {} datapoints".format(data.shape[0])
+        )
 
 
 def fewer_than_n_datapoints(data, n):
@@ -205,10 +268,14 @@ def fewer_than_n_datapoints(data, n):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         If data has n or more datapoints
     """
-    assert data.shape[0] < n
+    if not data.shape[0] < n:
+        raise TimekeepCheckError(
+            "fewer_than_n_datapoints: data has n or more datapoints;"
+            "data has {} datapoints".format(data.shape[0])
+        )
 
 
 def check_uniform_length(data):
@@ -223,7 +290,10 @@ def check_uniform_length(data):
 
     Raises
     ------
-    AssertionError
+    TimekeepCheckError
         If data contains timeseries with different lengths
     """
-    assert np.unique(lengths).size == 1
+    if not np.unique(lengths).size == 1:
+        raise TimekeepCheckError(
+            "check_uniform_length: timeseries in data are not uniform length"
+        )

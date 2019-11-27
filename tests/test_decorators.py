@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from timekeep._errors import TimekeepCheckError
 from timekeep.decorators import *
 
 
@@ -23,7 +24,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((2, 10))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_is_flat_dataset_raises_if_data_is_not_pandas_dataframe(self):
@@ -31,7 +32,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((15, 3))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_is_flat_dataset_raises_if_data_has_fewer_than_three_columns(self):
@@ -39,7 +40,7 @@ class TestDecorators:
         def inner_func():
             return pd.DataFrame({"id": [0, 1], "time": [0, 0]})
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_is_flat_dataset_returns_data_if_flat_dataset(self):
@@ -56,7 +57,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((15, 4))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_is_stacked_dataset_raises_if_data_does_not_have_four_columns(self):
@@ -72,7 +73,7 @@ class TestDecorators:
                 }
             )
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_is_stacked_dataset_returns_data_if_stacked_dataset(self):
@@ -110,7 +111,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((10, 55, 1))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_none_missing_does_not_raise_if_no_nans(self):
@@ -128,7 +129,7 @@ class TestDecorators:
             data[-1, -1, -1] = np.nan
             return data
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_full_timeseries_does_not_raise_if_all_timeseries_continue_to_end(self):
@@ -156,7 +157,7 @@ class TestDecorators:
             data[-1, -1, :] = 0.0
             return data
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             data = inner_func()
 
     def test_at_least_n_raises_if_fewer_than_n(self):
@@ -164,7 +165,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((4, 10, 1))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             inner_func()
 
     def test_at_least_n_does_not_raise_if_n_or_more(self):
@@ -180,7 +181,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((5, 100, 2))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             inner_func()
 
     def test_fewer_than_n_raises_if_more_than_n(self):
@@ -188,7 +189,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((6, 100, 2))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             inner_func()
 
     def test_fewer_than_n_does_not_raise_if_fewer_than_n(self):
@@ -203,7 +204,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((4, 100, 2))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             inner_func()
 
     def test_datapoints_in_range_raises_if_n_greater_than_range(self):
@@ -211,7 +212,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((11, 100, 2))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             inner_func()
 
     def test_datapoints_in_range_raises_if_n_equal_to_upper_bound(self):
@@ -219,7 +220,7 @@ class TestDecorators:
         def inner_func():
             return np.random.random((10, 100, 2))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             inner_func()
 
     def test_datapoints_in_range_does_not_raise_if_n_equal_to_lower_bound(self):
@@ -251,5 +252,5 @@ class TestDecorators:
             data[1, -2:, :] = np.nan
             return data
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(TimekeepCheckError):
             inner_func()

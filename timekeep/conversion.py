@@ -5,6 +5,8 @@ import numpy as np
 from sklearn.base import TransformerMixin
 from tslearn.utils import to_sklearn_dataset, to_time_series_dataset
 
+from ._errors import TimekeepCheckError
+
 
 def convert_timeseries_input(func):
     def inner(*args, **kwargs):
@@ -30,7 +32,11 @@ def convert_output_to_timeseries(func):
             return data
 
         # If it's not 2-dimensional, we can't handle it
-        assert len(data.shape) == 2
+        if not len(data.shape) == 2:
+            raise TimekeepCheckError(
+                "convert_output_to_timeseries: data has {} axes; "
+                "data must have 2 axes".format(data.shape)
+            )
         return to_time_series_dataset(data)
 
     return inner
