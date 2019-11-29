@@ -115,7 +115,7 @@ class TestTimeseriesTransformer:
         )
         converted_data = to_flat_dataset(data)
 
-        assert_frame_equal(converted_data, expected_data)
+        assert_frame_equal(converted_data, expected_data.astype("float64"))
 
     def test_to_flat_dataset_converts_tslearn_dataset(self):
         data = np.random.random((2, 3, 2))
