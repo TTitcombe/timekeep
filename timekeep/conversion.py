@@ -101,7 +101,9 @@ def to_flat_dataset(data):
         is_stacked_dataset(data)  # will raise TimekeepCheckError if not
 
         # Get the id and time values for one "kind" of values
-        flat_data = data.loc[data["kind"] == data.loc[0, "kind"], ["id", "time"]]
+        flat_data = data.loc[
+            data["kind"] == data.loc[0, "kind"], ["id", "time"]
+        ].reset_index(drop=True)
 
         # Add the values as columns
         for col_name in np.unique(data["kind"]):
@@ -169,7 +171,7 @@ def to_stacked_dataset(data):
         values_ = (
             data[[col for col in data.columns if col not in ("time", "id")]]
             .to_numpy()
-            .flatten()
+            .flatten("F")  # flatten Fortran (column-major) order
         )
 
         return pd.DataFrame({"id": id_, "time": time_, "kind": kind_, "value": values_})
