@@ -153,7 +153,20 @@ class TestTimeseriesTransformer:
             {
                 "id": [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
                 "time": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
-                "kind": ["0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "1", "1"],
+                "kind": [
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                ],
                 "value": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             }
         )

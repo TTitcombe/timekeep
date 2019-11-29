@@ -99,9 +99,15 @@ def to_flat_dataset(data):
 
     try:
         is_stacked_dataset(data)  # will raise TimekeepCheckError if not
+
+        # Get the id and time values for one "kind" of values
+        flat_data = data.loc[data["kind"] == data.loc[0, "kind"], ["id", "time"]]
+
+        # Add the values as columns
         for col_name in np.unique(data["kind"]):
-            data[str(col_name)] = data.loc[data.loc[:, "kind"] == col_name, "value"]
-        return data.drop(["kind", "value"], axis=1)
+            flat_data[col_name] = data.loc[data.loc[:, "kind"] == col_name, "value"]
+
+        return flat_data
     except TimekeepCheckError:
         pass
 
