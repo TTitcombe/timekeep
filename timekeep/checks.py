@@ -77,6 +77,10 @@ def is_flat_dataset(data):
             "2 columns; data has {}".format(data.shape[1])
         )
 
+    if "kind" in data.columns:
+        raise TimekeepCheckError("is_flat_dataset: data contains a 'kind' column."
+                                 "It is probably a stacked dataset")
+
     if "id" not in data.columns:
         raise TimekeepCheckError("is_flat_dataset: data does not contain 'id' column")
 

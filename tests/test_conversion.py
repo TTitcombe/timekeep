@@ -117,8 +117,8 @@ class TestTimeseriesTransformer:
         data = np.random.random((2, 3, 2))
         converted_data = to_flat_dataset(data)
 
-        assert converted_data.shape == (250, 5)
-        assert list(converted_data.columns) == ["id", "time", "0", "1", "2"]
+        assert converted_data.shape == (6, 4)
+        assert list(converted_data.columns) == ["id", "time", "0", "1"]
 
     def test_to_stacked_dataset_can_accept_stacked_dataset(self):
         data = pd.DataFrame(
@@ -147,9 +147,9 @@ class TestTimeseriesTransformer:
         converted_data = to_stacked_dataset(data)
         expected_data = pd.DataFrame(
             {
-                "id": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+                "id": [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
                 "time": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
-                "kind": [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
+                "kind": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
                 "value": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             }
         )
