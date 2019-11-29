@@ -91,12 +91,12 @@ class TestTimeseriesTransformer:
                     "value_1",
                     "value_1",
                     "value_1",
-                    "value_1",
-                    "value_1",
-                    "value_1",
                     "value_2",
                     "value_2",
                     "value_2",
+                    "value_1",
+                    "value_1",
+                    "value_1",
                     "value_2",
                     "value_2",
                     "value_2",
@@ -109,8 +109,8 @@ class TestTimeseriesTransformer:
             {
                 "id": [0, 0, 0, 1, 1, 1],
                 "time": [0, 1, 2, 0, 1, 2],
-                "value_1": [1, 2, 3, 4, 5, 6],
-                "value_2": [10, 9, 8, 7, 6, 5],
+                "value_1": [1, 2, 3, 10, 9, 8],
+                "value_2": [4, 5, 6, 7, 6, 5],
             }
         )
         converted_data = to_flat_dataset(data)
@@ -167,7 +167,7 @@ class TestTimeseriesTransformer:
                     "value_2",
                     "value_2",
                 ],
-                "value": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                "value": [1, 2, 3, 4, 5, 6, 10, 9, 8, 7, 6, 5],
             }
         )
 
