@@ -4,7 +4,7 @@ Checks to perform on data
 import numpy as np
 import pandas as pd
 
-from ._errors import TimekeepCheckError
+from .exceptions import TimekeepCheckError
 from .utility import find_stop_indices
 
 

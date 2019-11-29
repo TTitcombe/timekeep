@@ -7,8 +7,8 @@ import pytest
 from pandas.util.testing import assert_frame_equal
 from sklearn.decomposition import PCA
 
-from timekeep._errors import TimekeepCheckError
 from timekeep.conversion import *
+from timekeep.exceptions import TimekeepCheckError
 
 
 @timeseries_transformer

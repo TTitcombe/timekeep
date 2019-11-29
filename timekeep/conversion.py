@@ -6,8 +6,8 @@ import pandas as pd
 from sklearn.base import TransformerMixin
 from tslearn.utils import to_sklearn_dataset, to_time_series_dataset
 
-from ._errors import TimekeepCheckError
 from .checks import is_flat_dataset, is_stacked_dataset, is_timeseries_dataset
+from .exceptions import TimekeepCheckError
 
 
 def convert_timeseries_input(func):
