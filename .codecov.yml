@@ -3,4 +3,5 @@ coverage:
     project:
       default:
         # Coverage must be at least 80% to pass
-        target: 80
+        target: 80%
+    patch: no
