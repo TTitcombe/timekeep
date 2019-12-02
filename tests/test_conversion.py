@@ -179,3 +179,66 @@ class TestTimeseriesTransformer:
 
         assert converted_data.shape == (750, 4)
         assert list(converted_data.columns) == ["id", "time", "kind", "value"]
+
+    def test_to_timeseries_dataset_converts_flat_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1],
+                "time": [0, 0, 1, 1],
+                "value1": [1, 2, 3, 4],
+                "value2": [5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_timeseries_dataset(data)
+
+        assert isinstance(converted_data, np.ndarray)
+        assert np.array_equal(
+            converted_data, np.array([[[1, 5], [3, 7]], [[2, 6], [4, 8]]])
+        )
+
+    def test_to_timeseries_dataset_converts_stacked_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1, 0, 1, 0, 1],
+                "time": [0, 0, 1, 1, 0, 0, 1, 1],
+                "value": [1, 2, 3, 4, 5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_timeseries_dataset(data)
+
+        assert isinstance(converted_data, np.ndarray)
+        assert np.array_equal(
+            converted_data, np.array([[[1, 5], [3, 7]], [[2, 6], [4, 8]]])
+        )
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_all_dims_provided(
+        self
+    ):
+        data = pd.DataFrame(np.arange(120).reshape((10, 12)))
+        converted_data = to_timeseries_dataset(data, t=6, d=2)
+
+        assert np.array_equal(converted_data, np.arange(120).reshape((10, 6, 2)))
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_t_provided(self):
+        data = pd.DataFrame(np.arange(120).reshape((10, 12)))
+        converted_data = to_timeseries_dataset(data, t=4)
+
+        assert np.array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_provided(self):
+        data = pd.DataFrame(np.arange(120).reshape(10, 12))
+        converted_data = to_timeseries_dataset(data, d=3)
+
+        assert np.array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_equal_to_one_when_no_dims_provided(
+        self
+    ):
+        data = np.arange(120).reshape(10, 12)
+        converted_data = to_timeseries_dataset(data)
+
+        assert np.array_equal(
+            converted_data, np.expand_dims(np.arange(120).reshape((10, 12)), axis=2)
+        )

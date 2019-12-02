@@ -1,12 +1,14 @@
 """
 Functions for converting between data formats
 """
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 from sklearn.base import TransformerMixin
-from tslearn.utils import to_sklearn_dataset, to_time_series_dataset
 
-from .checks import is_flat_dataset, is_stacked_dataset, is_timeseries_dataset
+from .checks import (is_flat_dataset, is_sklearn_dataset, is_stacked_dataset,
+                     is_timeseries_dataset)
 from .exceptions import TimekeepCheckError
 
 
@@ -39,7 +41,7 @@ def convert_output_to_timeseries(func):
                 "convert_output_to_timeseries: data has {} axes; "
                 "data must have 2 axes".format(data.shape)
             )
-        return to_time_series_dataset(data)
+        return to_timeseries_dataset(data)
 
     return inner
 
@@ -66,7 +68,7 @@ def timeseries_transformer(cls: TransformerMixin) -> TransformerMixin:
 
 
 # ----- Format conversion ----- #
-def to_flat_dataset(data):
+def to_flat_dataset(data) -> pd.DataFrame:
     """
     Convert a tslearn timeseries or tsfresh stacked dataset
     to a tsfresh flat dataset
@@ -137,7 +139,7 @@ def to_flat_dataset(data):
     )
 
 
-def to_stacked_dataset(data):
+def to_stacked_dataset(data) -> pd.DataFrame:
     """
     Convert a tslearn timeseries or tsfresh flat dataset
     to a tsfresh stacked dataset
@@ -204,3 +206,173 @@ def to_stacked_dataset(data):
             type(data)
         )
     )
+
+
+def to_timeseries_dataset(
+    data, t: Optional[int] = None, d: Optional[int] = None
+) -> np.ndarray:
+    """
+    Convert a tsfresh or scikit-learn dataset to timeseries dataset.
+
+    A timeseries dataset is a numpy.ndarray with shape (N, T, D).
+
+    Parameters
+    ----------
+    data
+        The data to have its format changed
+    t : int, optional
+        The number of time points
+    d : int, optional
+        The number of data parameters
+
+    Returns
+    -------
+    numpy.ndarray
+        Data, now as a timeseries dataset
+
+    Raises
+    ------
+    ValueError
+        If data is not a scikit-learn dataset,
+        tsfresh stacked dataset or tsfresh flat dataset
+    """
+    try:
+        is_timeseries_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        return data
+
+    try:
+        is_flat_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        d = data.shape[1] - 2
+
+        times = data["time"]
+        t = np.max(times) - np.min(times) + 1
+
+        unique_ids = np.unique(data["id"])
+        n = unique_ids.size
+
+        ts_data = np.full((n, t, d), np.nan)
+        for idx in range(n):
+            idx_data = data.loc[data["id"] == unique_ids[idx], :]
+            idx_times = idx_data["time"].to_numpy() - np.min(times)
+            idx_data = idx_data.drop(["id", "time"], axis=1).to_numpy()
+
+            ts_data[idx, idx_times] = idx_data
+
+        return ts_data
+
+    try:
+        is_stacked_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        unique_kinds = np.unique(data["kind"])
+        d = len(unique_kinds)
+
+        times = data["time"]
+        t = np.max(times) - np.min(times) + 1
+
+        unique_ids = data["id"]
+        n = unique_ids.size
+
+        ts_data = np.full((n, t, d), np.nan)
+        for idx in range(n):
+            for kind_idx in range(d):
+                indexes = (data["id"] == unique_ids[idx]) & (
+                    data["kind"] == unique_kinds[kind_idx]
+                )
+                idx_data = data.loc[indexes, "value"].to_numpy()
+
+                idx_times = data.loc[indexes, "time"].to_numpy() - np.min(times)
+
+                ts_data[idx, idx_times, kind_idx] = idx_data
+
+        return ts_data
+
+    try:
+        is_sklearn_dataset(data)
+    except TimekeepCheckError:
+        raise ValueError(
+            "Did not recognise data of type {}. Cannot convert to timeseries dataset".format(
+                type(data)
+            )
+        )
+    else:
+        total_size = data.size
+        n = data.shape[0]
+
+        if isinstance(data, pd.DataFrame):
+            data = data.to_numpy()
+
+        if t is None and d is None:
+            # assume d = 1
+            return np.expand_dims(data, axis=2)
+        elif t is None:
+            t = int(total_size / (n * d))
+        elif d is None:
+            d = int(total_size / (n * t))
+
+        return data.T.reshape(n, t, d).T
+
+
+def to_sklearn_dataset(data) -> np.ndarray:
+    """
+    Convert a tslearn timeseries or tsfresh dataset
+    to a scikit-learn dataset
+
+    A scikit-learn dataset is a numpy.ndarray with 2 axes,
+    shape (N, D) where N is number of data points and D is number
+    of dimensions.
+
+    Parameters
+    ----------
+    data
+        The data to have its format changed
+
+    Returns
+    -------
+    numpy.ndarray
+        The data, now as a scikit-learn dataset
+
+    Raises
+    ------
+    ValueError
+        If data is not a tslearn timeseries dataset,
+        tsfresh stacked dataset or tsfresh flat dataset
+    """
+    try:
+        is_timeseries_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        return data.T.reshape(-1, data.shape[0]).T
+
+    try:
+        is_stacked_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        return to_sklearn_dataset(to_timeseries_dataset(data))
+
+    try:
+        is_flat_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        return to_sklearn_dataset(to_timeseries_dataset(data))
+
+    try:
+        is_flat_dataset(data)
+    except TimekeepCheckError:
+        raise ValueError(
+            "Did not recognise data of type {}. Cannot convert to sklearn dataset".format(
+                type(data)
+            )
+        )
+    else:
+        return data
