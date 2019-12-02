@@ -106,8 +106,11 @@ def to_flat_dataset(data):
         ].reset_index(drop=True)
 
         # Add the values as columns
+        data_value_dtype = data["value"].dtype
         for col_name in np.unique(data["kind"]):
-            flat_data[col_name] = data.loc[data.loc[:, "kind"] == col_name, "value"]
+            flat_data[col_name] = data.loc[
+                data.loc[:, "kind"] == col_name, "value"
+            ].astype(data_value_dtype)
 
         return flat_data
     except TimekeepCheckError:
