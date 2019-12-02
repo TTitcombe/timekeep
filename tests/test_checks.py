@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from timekeep._errors import TimekeepCheckError
 from timekeep.checks import *
+from timekeep.exceptions import TimekeepCheckError
 
 
 class TestChecks:

@@ -2,11 +2,13 @@
 Unit tests for timekeep.conversion
 """
 import numpy as np
+import pandas as pd
 import pytest
+from pandas.util.testing import assert_frame_equal
 from sklearn.decomposition import PCA
 
-from timekeep._errors import TimekeepCheckError
 from timekeep.conversion import *
+from timekeep.exceptions import TimekeepCheckError
 
 
 @timeseries_transformer
@@ -66,3 +68,114 @@ class TestTimeseriesTransformer:
 
         with pytest.raises(TimekeepCheckError):
             load()
+
+    def test_to_flat_dataset_can_accept_flat_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2],
+                "value_1": [1, 2, 3, 4, 5, 6],
+                "value_2": [10, 9, 8, 7, 6, 5],
+            }
+        )
+
+        converted_data = to_flat_dataset(data)
+        assert_frame_equal(data, converted_data)
+
+    def test_to_flat_dataset_converts_stacked_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+                "kind": [
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                ],
+                "value": [1, 2, 3, 4, 5, 6, 10, 9, 8, 7, 6, 5],
+            }
+        )
+
+        expected_data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2],
+                "value_1": [1, 2, 3, 10, 9, 8],
+                "value_2": [4, 5, 6, 7, 6, 5],
+            }
+        )
+        converted_data = to_flat_dataset(data)
+
+        assert_frame_equal(converted_data, expected_data)
+
+    def test_to_flat_dataset_converts_tslearn_dataset(self):
+        data = np.random.random((2, 3, 2))
+        converted_data = to_flat_dataset(data)
+
+        assert converted_data.shape == (6, 4)
+        assert list(converted_data.columns) == ["id", "time", "0", "1"]
+
+    def test_to_stacked_dataset_can_accept_stacked_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+                "kind": [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
+                "value": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            }
+        )
+
+        converted_data = to_stacked_dataset(data)
+
+        assert_frame_equal(converted_data, data)
+
+    def test_to_stacked_dataset_converts_flat_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2],
+                "value_1": [1, 2, 3, 4, 5, 6],
+                "value_2": [10, 9, 8, 7, 6, 5],
+            }
+        )
+
+        converted_data = to_stacked_dataset(data)
+        expected_data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+                "kind": [
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                ],
+                "value": [1, 2, 3, 4, 5, 6, 10, 9, 8, 7, 6, 5],
+            }
+        )
+
+        assert_frame_equal(converted_data, expected_data)
+
+    def test_to_stacked_dataset_converts_tslearn_dataset(self):
+        data = np.random.random((10, 25, 3))
+        converted_data = to_stacked_dataset(data)
+
+        assert converted_data.shape == (750, 4)
+        assert list(converted_data.columns) == ["id", "time", "kind", "value"]

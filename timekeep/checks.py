@@ -4,7 +4,7 @@ Checks to perform on data
 import numpy as np
 import pandas as pd
 
-from ._errors import TimekeepCheckError
+from .exceptions import TimekeepCheckError
 from .utility import find_stop_indices
 
 
@@ -75,6 +75,12 @@ def is_flat_dataset(data):
         raise TimekeepCheckError(
             "is_flat_dataset: data must have at least "
             "2 columns; data has {}".format(data.shape[1])
+        )
+
+    if "kind" in data.columns:
+        raise TimekeepCheckError(
+            "is_flat_dataset: data contains a 'kind' column."
+            "It is probably a stacked dataset"
         )
 
     if "id" not in data.columns:
