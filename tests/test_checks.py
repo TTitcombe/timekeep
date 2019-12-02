@@ -137,6 +137,37 @@ class TestChecks:
         )
         is_stacked_dataset(data)
 
+    def test_is_sklearn_dataset_raises_if_not_dataframe_or_array(self):
+        # Passes
+        is_sklearn_dataset(np.random.random((10, 2)))
+        is_sklearn_dataset(pd.DataFrame(np.random.random((10, 2))))
+
+        with pytest.raises(TimekeepCheckError):
+            is_sklearn_dataset([[0, 1], [1, 2], [2, 3]])
+
+    def test_is_sklearn_dataset_raises_if_more_than_two_dimensions(self):
+        with pytest.raises(TimekeepCheckError):
+            is_sklearn_dataset(np.random.random((10, 3, 1)))
+
+    def test_is_sklearn_dataset_raises_if_is_tsfresh_flat_dataset(self):
+        data = pd.DataFrame({"id": [0, 0], "time": [0, 1], "value": [100, 102]})
+
+        with pytest.raises(TimekeepCheckError):
+            is_sklearn_dataset(data)
+
+    def test_is_sklearn_dataset_raises_if_is_tsfresh_stacked_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 0],
+                "time": [0, 1, 0, 1],
+                "kind": [0, 0, 1, 1],
+                "value": [1, 2, 3, 4],
+            }
+        )
+
+        with pytest.raises(TimekeepCheckError):
+            is_sklearn_dataset(data)
+
     def test_is_shape_returns_true_for_equal_shapes(self):
         data = np.random.random((10, 5, 2))
         is_shape(data, (10, 5, 2))

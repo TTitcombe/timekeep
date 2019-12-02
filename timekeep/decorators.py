@@ -31,6 +31,15 @@ def is_stacked_dataset(func):
     return inner
 
 
+def is_sklearn_dataset(func):
+    def inner(*args, **kwargs):
+        data = func(*args, **kwargs)
+        tkc.is_sklearn_dataset(data)
+        return data
+
+    return inner
+
+
 def is_shape(shape):
     def is_shape_decorator(func):
         def inner(*args, **kwargs):

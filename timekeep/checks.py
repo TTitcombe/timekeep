@@ -155,6 +155,55 @@ def is_stacked_dataset(data):
         )
 
 
+def is_sklearn_dataset(data):
+    """
+        Check if data is scikit-learn style dataset.
+
+        scikit-learn datasets can be pandas.DataFrame or numpy.ndarray objects.
+        They have two dimensions.
+
+        Parameters
+        ----------
+        data
+            The data to check
+
+        Raises
+        ------
+        TimekeepCheckError
+            data is not a pandas.DataFrame or numpy.ndarray
+            data does not have 2 dimensions
+            data is a tsfresh-style flat dataset
+            data is a tsfresh-style stacked dataset
+    """
+    # Check if it could be sklearn dataset
+    if not (isinstance(data, pd.DataFrame) or isinstance(data, np.ndarray)):
+        raise TimekeepCheckError(
+            "is_sklearn_dataset: data is not pandas.DataFrame or numpy.ndarray"
+        )
+
+    if len(data.shape) != 2:
+        raise TimekeepCheckError(
+            "is_sklearn_dataset: data has {} dimensions. "
+            "sklearn dataset have 2.".format(len(data.shape))
+        )
+
+    # Check if it's tsfresh style flat dataset instead
+    try:
+        is_flat_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        raise TimekeepCheckError("is_sklearn_dataset: data is flat dataset")
+
+    # Check if it's tsfresh style stacked dataset instead
+    try:
+        is_stacked_dataset(data)
+    except TimekeepCheckError:
+        pass
+    else:
+        raise TimekeepCheckError("is_sklearn_dataset: data is stacked dataset")
+
+
 def is_shape(data, shape):
     """
     Compare the shape of a dataset to a given shape.
