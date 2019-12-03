@@ -4,6 +4,7 @@ Unit tests for timekeep.conversion
 import numpy as np
 import pandas as pd
 import pytest
+from numpy.testing import assert_array_equal
 from pandas.util.testing import assert_frame_equal
 from sklearn.decomposition import PCA
 
@@ -193,7 +194,7 @@ class TestTimeseriesTransformer:
         converted_data = to_timeseries_dataset(data)
 
         assert isinstance(converted_data, np.ndarray)
-        assert np.array_equal(
+        assert_array_equal(
             converted_data, np.array([[[1, 5], [3, 7]], [[2, 6], [4, 8]]])
         )
 
@@ -210,7 +211,7 @@ class TestTimeseriesTransformer:
         converted_data = to_timeseries_dataset(data)
 
         assert isinstance(converted_data, np.ndarray)
-        assert np.array_equal(
+        assert_array_equal(
             converted_data, np.array([[[1, 5], [3, 7]], [[2, 6], [4, 8]]])
         )
 
@@ -221,21 +222,21 @@ class TestTimeseriesTransformer:
         converted_data = to_timeseries_dataset(data, t=6, d=2)
 
         assert converted_data.shape == (10, 6, 2)
-        assert np.array_equal(converted_data, np.arange(120).reshape((10, 6, 2)))
+        assert_array_equal(converted_data, np.arange(120).reshape((10, 6, 2)))
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_t_provided(self):
         data = pd.DataFrame(np.arange(120).reshape((10, 12)))
         converted_data = to_timeseries_dataset(data, t=4)
 
         assert converted_data.shape == (10, 4, 3)
-        assert np.array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+        assert_array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_provided(self):
         data = pd.DataFrame(np.arange(120).reshape(10, 12))
         converted_data = to_timeseries_dataset(data, d=3)
 
         assert converted_data.shape == (10, 4, 3)
-        assert np.array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+        assert_array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_equal_to_one_when_no_dims_provided(
         self
@@ -244,6 +245,6 @@ class TestTimeseriesTransformer:
         converted_data = to_timeseries_dataset(data)
 
         assert converted_data.shape == (10, 12, 1)
-        assert np.array_equal(
+        assert_array_equal(
             converted_data, np.expand_dims(np.arange(120).reshape((10, 12)), axis=2)
         )
