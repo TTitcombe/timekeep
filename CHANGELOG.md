@@ -6,9 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Checks for dataset format
+    - [`tsfresh`][tsfresh]-style flat and stacked datasets, [`tslearn`][tslearn] timeseries datasets
+    and [`sklearn`][sklearn] datasets
+- Functions for converting between those formats
 
 ### Changed
 - Check failures raise a custom error, not `AssertionError`
+
+### Removed
+- [`tslearn`][tslearn] is no longer a dependency
 
 ### Fixed
 - Conversion decorators work on functions and methods
