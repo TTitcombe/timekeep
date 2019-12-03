@@ -4,6 +4,7 @@ Unit tests for timekeep.conversion
 import numpy as np
 import pandas as pd
 import pytest
+from numpy.testing import assert_array_equal
 from pandas.util.testing import assert_frame_equal
 from sklearn.decomposition import PCA
 
@@ -124,6 +125,10 @@ class TestTimeseriesTransformer:
         assert converted_data.shape == (6, 4)
         assert list(converted_data.columns) == ["id", "time", "0", "1"]
 
+    def test_to_flat_dataset_raises_value_error_if_data_format_not_recognised(self):
+        with pytest.raises(ValueError):
+            data = to_flat_dataset(np.random.random((10,)))
+
     def test_to_stacked_dataset_can_accept_stacked_dataset(self):
         data = pd.DataFrame(
             {
@@ -179,3 +184,133 @@ class TestTimeseriesTransformer:
 
         assert converted_data.shape == (750, 4)
         assert list(converted_data.columns) == ["id", "time", "kind", "value"]
+
+    def test_to_stacked_dataset_raises_value_error_if_data_format_not_recognised(self):
+        with pytest.raises(ValueError):
+            data = to_stacked_dataset(np.random.random((10,)))
+
+    def test_to_timeseries_dataset_converts_flat_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1],
+                "time": [0, 0, 1, 1],
+                "value1": [1, 2, 3, 4],
+                "value2": [5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_timeseries_dataset(data)
+
+        assert isinstance(converted_data, np.ndarray)
+        assert_array_equal(
+            converted_data, np.array([[[1, 5], [3, 7]], [[2, 6], [4, 8]]])
+        )
+
+    def test_to_timeseries_dataset_converts_stacked_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1, 0, 1, 0, 1],
+                "time": [0, 0, 1, 1, 0, 0, 1, 1],
+                "kind": [0, 0, 0, 0, 1, 1, 1, 1],
+                "value": [1, 2, 3, 4, 5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_timeseries_dataset(data)
+
+        assert isinstance(converted_data, np.ndarray)
+        assert_array_equal(
+            converted_data, np.array([[[1, 5], [3, 7]], [[2, 6], [4, 8]]])
+        )
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_all_dims_provided(
+        self
+    ):
+        data = pd.DataFrame(np.arange(120).reshape((10, 12)))
+        converted_data = to_timeseries_dataset(data, t=6, d=2)
+
+        assert converted_data.shape == (10, 6, 2)
+        assert_array_equal(converted_data, np.arange(120).reshape((10, 6, 2)))
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_t_provided(self):
+        data = pd.DataFrame(np.arange(120).reshape((10, 12)))
+        converted_data = to_timeseries_dataset(data, t=4)
+
+        assert converted_data.shape == (10, 4, 3)
+        assert_array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_provided(self):
+        data = pd.DataFrame(np.arange(120).reshape(10, 12))
+        converted_data = to_timeseries_dataset(data, d=3)
+
+        assert converted_data.shape == (10, 4, 3)
+        assert_array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+
+    def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_equal_to_one_when_no_dims_provided(
+        self
+    ):
+        data = np.arange(120).reshape(10, 12)
+        converted_data = to_timeseries_dataset(data)
+
+        assert converted_data.shape == (10, 12, 1)
+        assert_array_equal(
+            converted_data, np.expand_dims(np.arange(120).reshape((10, 12)), axis=2)
+        )
+
+    def test_to_timeseries_dataset_raises_value_error_if_data_format_not_recognised(
+        self
+    ):
+        with pytest.raises(ValueError):
+            data = to_timeseries_dataset(np.random.random((10,)))
+
+    def test_to_sklearn_dataset_converts_timeseries_dataset(self):
+        datum = np.expand_dims(np.array([[1, 4], [2, 5], [3, 6]]), axis=0)
+        data = np.vstack((datum, datum))
+
+        converted_data = to_sklearn_dataset(data)
+
+        expected_datum = np.expand_dims(np.array([1, 2, 3, 4, 5, 6]), axis=0)
+        expected_data = np.vstack((expected_datum, expected_datum))
+
+        assert_array_equal(converted_data, expected_data)
+
+    def test_to_sklearn_dataset_converts_stacked_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1, 0, 1, 0, 1],
+                "time": [0, 0, 1, 1, 0, 0, 1, 1],
+                "kind": [0, 0, 0, 0, 1, 1, 1, 1],
+                "value": [1, 2, 3, 4, 5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_sklearn_dataset(data)
+
+        expected_data = np.array([[1, 3, 5, 7], [2, 4, 6, 8]])
+        assert_array_equal(converted_data, expected_data)
+
+    def test_to_sklearn_dataset_converts_flat_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1],
+                "time": [0, 0, 1, 1],
+                "value1": [1, 2, 3, 4],
+                "value2": [5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_sklearn_dataset(data)
+
+        expected_data = np.array([[1, 3, 5, 7], [2, 4, 6, 8]])
+
+        assert_array_equal(converted_data, expected_data)
+
+    def test_to_sklearn_dataset_raises_value_error_if_data_format_not_recognised(self):
+        with pytest.raises(ValueError):
+            data = to_sklearn_dataset(np.random.random((10,)))
+
+    def test_to_sklearn_dataset_returns_sklearn_dataset(self):
+        data = pd.DataFrame(np.random.random((12, 80)))
+        converted_data = to_sklearn_dataset(data)
+
+        assert_array_equal(converted_data, data)

@@ -18,6 +18,6 @@ setup(
     author_email="t.j.titcombe@gmail.com",
     license="MIT",
     packages=["timekeep"],
-    install_requires=["numpy", "sklearn", "tslearn"],
+    install_requires=["numpy", "sklearn"],
     include_package_data=True,
 )

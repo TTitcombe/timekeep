@@ -87,6 +87,32 @@ class TestDecorators:
         assert data.shape == (2, 4)
         assert list(data.columns) == ["id", "time", "kind", "value"]
 
+    def test_is_sklearn_dataset_returns_data_if_sklearn_dataset(self):
+        @is_sklearn_dataset
+        def inner_func():
+            return np.random.random((100, 25))
+
+        data = inner_func()
+        assert data.shape == (100, 25)
+
+    def test_is_sklearn_dataset_raises_if_flat_dataset(self):
+        @is_sklearn_dataset
+        def inner_func():
+            return pd.DataFrame({"id": [0, 1], "time": [0, 0], "value": [1, 2]})
+
+        with pytest.raises(TimekeepCheckError):
+            data = inner_func()
+
+    def test_is_sklearn_dataset_raises_if_stacked_dataset(self):
+        @is_sklearn_dataset
+        def inner_func():
+            return pd.DataFrame(
+                {"id": [0, 1], "time": [0, 0], "kind": [0, 0], "value": [1, 2]}
+            )
+
+        with pytest.raises(TimekeepCheckError):
+            data = inner_func()
+
     def test_is_shape_returns_data_if_shapes_match(self):
         @is_shape((1, 2, 3))
         def inner_func():
