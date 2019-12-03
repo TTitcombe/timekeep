@@ -284,7 +284,8 @@ def to_timeseries_dataset(
         unique_ids = data["id"]
         n = unique_ids.size
 
-        ts_data = np.full((n, t, d), np.nan)
+        stacked_value_dtype = data["value"].to_numpy().dtype
+        ts_data = np.full((n, t, d), np.nan, dtype=stacked_value_dtype)
         for idx in range(n):
             for kind_idx in range(d):
                 indexes = (data["id"] == unique_ids[idx]) & (
@@ -321,7 +322,7 @@ def to_timeseries_dataset(
         elif d is None:
             d = int(total_size / (n * t))
 
-        return data.T.reshape((n, t, d))
+        return data.reshape((n, t, d))
 
 
 def to_sklearn_dataset(data) -> np.ndarray:
