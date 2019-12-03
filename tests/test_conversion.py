@@ -248,3 +248,40 @@ class TestTimeseriesTransformer:
         assert_array_equal(
             converted_data, np.expand_dims(np.arange(120).reshape((10, 12)), axis=2)
         )
+
+    def test_to_sklearn_dataset_converts_timeseries_dataset(self):
+        data = np.random.random((8, 101, 3))
+        converted_data = to_sklearn_dataset(data)
+
+        assert_array_equal(converted_data, data.reshape((8, 303)))
+
+    def test_to_sklearn_dataset_converts_stacked_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1, 0, 1, 0, 1],
+                "time": [0, 0, 1, 1, 0, 0, 1, 1],
+                "kind": [0, 0, 0, 0, 1, 1, 1, 1],
+                "value": [1, 2, 3, 4, 5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_sklearn_dataset(data)
+
+        expected_data = np.array([[1, 3, 5, 7], [2, 4, 6, 8]])
+        assert_array_equal(converted_data, expected_data)
+
+    def test_to_sklearn_dataset_converts_flat_dataset(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 1, 0, 1],
+                "time": [0, 0, 1, 1],
+                "value1": [1, 2, 3, 4],
+                "value2": [5, 6, 7, 8],
+            }
+        )
+
+        converted_data = to_timeseries_dataset(data)
+
+        expected_data = np.array([[1, 3, 5, 7], [2, 4, 6, 8]])
+
+        assert_array_equal(converted_data, expected_data)
