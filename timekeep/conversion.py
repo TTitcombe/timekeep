@@ -281,7 +281,7 @@ def to_timeseries_dataset(
         times = data["time"]
         t = np.max(times) - np.min(times) + 1
 
-        unique_ids = data["id"]
+        unique_ids = np.unique(data["id"])
         n = unique_ids.size
 
         stacked_value_dtype = data["value"].to_numpy().dtype
