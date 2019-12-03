@@ -7,8 +7,12 @@ import numpy as np
 import pandas as pd
 from sklearn.base import TransformerMixin
 
-from .checks import (is_flat_dataset, is_sklearn_dataset, is_stacked_dataset,
-                     is_timeseries_dataset)
+from .checks import (
+    is_flat_dataset,
+    is_sklearn_dataset,
+    is_stacked_dataset,
+    is_timeseries_dataset,
+)
 from .exceptions import TimekeepCheckError
 
 
@@ -317,7 +321,7 @@ def to_timeseries_dataset(
         elif d is None:
             d = int(total_size / (n * t))
 
-        return data.T.reshape(n, t, d).T
+        return data.T.reshape((n, t, d)).T
 
 
 def to_sklearn_dataset(data) -> np.ndarray:

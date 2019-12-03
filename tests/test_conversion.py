@@ -219,18 +219,21 @@ class TestTimeseriesTransformer:
         data = pd.DataFrame(np.arange(120).reshape((10, 12)))
         converted_data = to_timeseries_dataset(data, t=6, d=2)
 
+        assert converted_data.shape == (10, 6, 2)
         assert np.array_equal(converted_data, np.arange(120).reshape((10, 6, 2)))
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_t_provided(self):
         data = pd.DataFrame(np.arange(120).reshape((10, 12)))
         converted_data = to_timeseries_dataset(data, t=4)
 
+        assert converted_data.shape == (10, 4, 3)
         assert np.array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_provided(self):
         data = pd.DataFrame(np.arange(120).reshape(10, 12))
         converted_data = to_timeseries_dataset(data, d=3)
 
+        assert converted_data.shape == (10, 4, 3)
         assert np.array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_equal_to_one_when_no_dims_provided(
@@ -239,6 +242,7 @@ class TestTimeseriesTransformer:
         data = np.arange(120).reshape(10, 12)
         converted_data = to_timeseries_dataset(data)
 
+        assert converted_data.shape == (10, 12, 1)
         assert np.array_equal(
             converted_data, np.expand_dims(np.arange(120).reshape((10, 12)), axis=2)
         )
