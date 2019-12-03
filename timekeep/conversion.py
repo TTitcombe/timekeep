@@ -355,7 +355,7 @@ def to_sklearn_dataset(data) -> np.ndarray:
     except TimekeepCheckError:
         pass
     else:
-        return data.T.reshape(-1, data.shape[0]).T
+        return data.T.reshape((-1, data.shape[0])).T
 
     try:
         is_stacked_dataset(data)
@@ -372,7 +372,7 @@ def to_sklearn_dataset(data) -> np.ndarray:
         return to_sklearn_dataset(to_timeseries_dataset(data))
 
     try:
-        is_flat_dataset(data)
+        is_sklearn_dataset(data)
     except TimekeepCheckError:
         raise ValueError(
             "Did not recognise data of type {}. Cannot convert to sklearn dataset".format(

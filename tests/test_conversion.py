@@ -125,6 +125,10 @@ class TestTimeseriesTransformer:
         assert converted_data.shape == (6, 4)
         assert list(converted_data.columns) == ["id", "time", "0", "1"]
 
+    def test_to_flat_dataset_raises_value_error_if_data_format_not_recognised(self):
+        with pytest.raises(ValueError):
+            data = to_flat_dataset(np.random.random((10,)))
+
     def test_to_stacked_dataset_can_accept_stacked_dataset(self):
         data = pd.DataFrame(
             {
@@ -180,6 +184,10 @@ class TestTimeseriesTransformer:
 
         assert converted_data.shape == (750, 4)
         assert list(converted_data.columns) == ["id", "time", "kind", "value"]
+
+    def test_to_stacked_dataset_raises_value_error_if_data_format_not_recognised(self):
+        with pytest.raises(ValueError):
+            data = to_stacked_dataset(np.random.random((10,)))
 
     def test_to_timeseries_dataset_converts_flat_dataset(self):
         data = pd.DataFrame(
@@ -249,11 +257,22 @@ class TestTimeseriesTransformer:
             converted_data, np.expand_dims(np.arange(120).reshape((10, 12)), axis=2)
         )
 
+    def test_to_timeseries_dataset_raises_value_error_if_data_format_not_recognised(
+        self
+    ):
+        with pytest.raises(ValueError):
+            data = to_timeseries_dataset(np.random.random((10,)))
+
     def test_to_sklearn_dataset_converts_timeseries_dataset(self):
-        data = np.random.random((8, 101, 3))
+        datum = np.expand_dims(np.array([[1, 4], [2, 5], [3, 6]]), axis=0)
+        data = np.vstack((datum, datum))
+
         converted_data = to_sklearn_dataset(data)
 
-        assert_array_equal(converted_data, data.reshape((8, 303)))
+        expected_datum = np.expand_dims(np.array([1, 2, 3, 4, 5, 6]), axis=0)
+        expected_data = np.vstack((expected_datum, expected_datum))
+
+        assert_array_equal(converted_data, expected_data)
 
     def test_to_sklearn_dataset_converts_stacked_dataset(self):
         data = pd.DataFrame(
@@ -280,8 +299,18 @@ class TestTimeseriesTransformer:
             }
         )
 
-        converted_data = to_timeseries_dataset(data)
+        converted_data = to_sklearn_dataset(data)
 
         expected_data = np.array([[1, 3, 5, 7], [2, 4, 6, 8]])
 
         assert_array_equal(converted_data, expected_data)
+
+    def test_to_sklearn_dataset_raises_value_error_if_data_format_not_recognised(self):
+        with pytest.raises(ValueError):
+            data = to_sklearn_dataset(np.random.random((10,)))
+
+    def test_to_sklearn_dataset_returns_sklearn_dataset(self):
+        data = pd.DataFrame(np.random.random((12, 80)))
+        converted_data = to_sklearn_dataset(data)
+
+        assert_array_equal(converted_data, data)
