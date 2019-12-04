@@ -1,0 +1,23 @@
+name: timekeep-dev
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7.*
+  - numpy >=1.16  # for numeric arrays
+  - pandas >=0.24  # for data frames
+  - scikit-learn >=0.21
+# notebooks
+  - jupyter  # for notebooks
+  - jupyterlab  # for notebooks IDE
+  - nodejs  # for jupyterlab build
+  - watermark  # for traceability in notebooks
+  - nbconvert  # for nbstripout to work
+# unit testing
+  - pytest >=4.4  # for unit testing
+# code quality
+  - black  # for automatic code formatting
+  - isort  # for import standardization
+# utilities
+  - pip >=19  # for native python installer
+  - pip:
+    - -e .  # project code
