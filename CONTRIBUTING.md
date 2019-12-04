@@ -4,6 +4,14 @@ Thank you for contributing to `timekeep`. Feel free to open an issue reporting a
 or requesting a new feature. If you would like to open a pull request, please read
 the information below.
 
+### Environment
+If you are using [conda] you can get the correct development environment by running
+the command
+
+```python
+conda env create -n timekeep-dev -f environment.in.yml
+```
+
 ### Code quality
 `timekeep` uses [`black`][black] to format code and [`isort`][isort] to maintain clean
 importing. Make sure you run these packages on your code changes otherwise the tests will fail.
@@ -25,6 +33,7 @@ Use the pull request template where possible. The important things to include ar
 3. How to manually confirm that your code is working as you expect it to
 
 [black]: https://github.com/psf/black
+[conda]: https://www.anaconda.com/
 [isort]: https://github.com/search?q=isort
 [travis]: https://travis-ci.com/
 
