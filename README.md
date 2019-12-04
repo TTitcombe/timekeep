@@ -25,7 +25,7 @@ pip install timekeep
 to install.
 
 **Important**:
-`timekeep` is currently on version `0.1.0` and is in active development. As the version reflects,
+`timekeep` is currently on version `0.x.y` and is in active development. As the version reflects,
 the codebase is liable to change. Once main functionality has been applied, a stable version `1.0.0`
 will be released.
 
