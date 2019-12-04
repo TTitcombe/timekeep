@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [`tsfresh`][tsfresh]-style flat and stacked datasets, [`tslearn`][tslearn] timeseries datasets
     and [`sklearn`][sklearn] datasets
 - Functions for converting between those formats
+- `timekeep` is now tested on Python `3.6`, `3.7`, `3.8`
 
 ### Changed
 - Check failures raise a custom error, not `AssertionError`
