@@ -9,7 +9,7 @@ If you are using [conda] you can get the correct development environment by runn
 the command
 
 ```python
-conda env create -n timekeep-dev -f environment.in.yml
+conda env create -n timekeep-dev -f environment.yml
 ```
 
 ### Code quality
