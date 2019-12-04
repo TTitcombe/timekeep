@@ -2,14 +2,18 @@ from setuptools import setup
 
 import timekeep
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name="timekeep",
     version=timekeep.__version__,
     description="Defensive timeseries analytics",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Topic :: Scientific/Engineering :: Information Analysis",
     ],
     keywords="timeseries time series analysis data science",
@@ -20,4 +24,5 @@ setup(
     packages=["timekeep"],
     install_requires=["numpy", "sklearn", "pandas"],
     include_package_data=True,
+    python_requires=">=3.6"
 )
