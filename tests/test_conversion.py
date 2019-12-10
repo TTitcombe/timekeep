@@ -61,7 +61,7 @@ class TestTimeseriesTransformer:
         assert returned_data.shape == (10, 5, 1)
 
     def test_convert_output_to_timeseries_raises_if_output_is_more_than_three_dimensional(
-        self
+        self,
     ):
         @convert_output_to_timeseries
         def load():
@@ -129,6 +129,18 @@ class TestTimeseriesTransformer:
         with pytest.raises(ValueError):
             data = to_flat_dataset(np.random.random((10,)))
 
+    def test_flat_to_stacked_to_flat_returns_same_dataframe(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+                "kind": [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
+                "value": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            }
+        )
+        converted_data = to_stacked_dataset(to_flat_dataset(data))
+        assert_frame_equal(converted_data, data)
+
     def test_to_stacked_dataset_can_accept_stacked_dataset(self):
         data = pd.DataFrame(
             {
@@ -189,6 +201,31 @@ class TestTimeseriesTransformer:
         with pytest.raises(ValueError):
             data = to_stacked_dataset(np.random.random((10,)))
 
+    def test_stacked_to_flat_to_stacked_returns_same_dataframe(self):
+        data = pd.DataFrame(
+            {
+                "id": [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1],
+                "time": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+                "kind": [
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_1",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                    "value_2",
+                ],
+                "value": [1, 2, 3, 4, 5, 6, 10, 9, 8, 7, 6, 5],
+            }
+        )
+        converted_data = to_stacked_dataset(to_flat_dataset(data))
+        assert_frame_equal(converted_data, data)
+
     def test_to_timeseries_dataset_converts_flat_dataset(self):
         data = pd.DataFrame(
             {
@@ -224,7 +261,7 @@ class TestTimeseriesTransformer:
         )
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_all_dims_provided(
-        self
+        self,
     ):
         data = pd.DataFrame(np.arange(120).reshape((10, 12)))
         converted_data = to_timeseries_dataset(data, t=6, d=2)
@@ -247,7 +284,7 @@ class TestTimeseriesTransformer:
         assert_array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_equal_to_one_when_no_dims_provided(
-        self
+        self,
     ):
         data = np.arange(120).reshape(10, 12)
         converted_data = to_timeseries_dataset(data)
@@ -258,10 +295,15 @@ class TestTimeseriesTransformer:
         )
 
     def test_to_timeseries_dataset_raises_value_error_if_data_format_not_recognised(
-        self
+        self,
     ):
         with pytest.raises(ValueError):
             data = to_timeseries_dataset(np.random.random((10,)))
+
+    def test_timeseries_to_sklearn_to_timeseries_return_same_array(self):
+        data = np.random.random((18, 26, 4))
+        converted_data = to_timeseries_dataset(to_sklearn_dataset(data))
+        assert_array_equal(converted_data, data)
 
     def test_to_sklearn_dataset_converts_timeseries_dataset(self):
         datum = np.expand_dims(np.array([[1, 4], [2, 5], [3, 6]]), axis=0)
@@ -313,4 +355,23 @@ class TestTimeseriesTransformer:
         data = pd.DataFrame(np.random.random((12, 80)))
         converted_data = to_sklearn_dataset(data)
 
+        assert_array_equal(converted_data, data)
+
+    def test_sklearn_to_timeseries_to_sklearn_returns_same_array(self):
+        data = np.random.random((18, 104))
+        converted_data = to_sklearn_dataset(to_timeseries_dataset(data))
+        assert_array_equal(converted_data, data)
+
+    def test_sklearn_to_timeseries_to_sklearn_return_same_array_when_one_dimension_provided(
+        self,
+    ):
+        data = np.random.random((18, 104))
+        converted_data = to_sklearn_dataset(to_timeseries_dataset(data, t=26))
+        assert_array_equal(converted_data, data)
+
+    def test_sklearn_to_timeseries_to_sklearn_return_same_array_when_all_dimensions_provided(
+        self,
+    ):
+        data = np.random.random((18, 104))
+        converted_data = to_sklearn_dataset(to_timeseries_dataset(data, t=26, d=4))
         assert_array_equal(converted_data, data)
