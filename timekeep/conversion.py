@@ -5,7 +5,6 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-from sklearn.base import TransformerMixin
 
 from .checks import (
     is_flat_dataset,
@@ -50,7 +49,7 @@ def convert_output_to_timeseries(func):
     return inner
 
 
-def timeseries_transformer(cls: TransformerMixin) -> TransformerMixin:
+def timeseries_transformer(cls):
     """
     Augment sklearn.TransformerMixin classes to accept timeseries datasets
 

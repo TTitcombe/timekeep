@@ -22,7 +22,7 @@ setup(
     author_email="t.j.titcombe@gmail.com",
     license="MIT",
     packages=["timekeep"],
-    install_requires=["numpy", "sklearn", "pandas"],
+    install_requires=["numpy", "pandas"],
     include_package_data=True,
     python_requires=">=3.6",
 )

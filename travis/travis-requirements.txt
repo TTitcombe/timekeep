@@ -1,9 +1,11 @@
+# Requirements not included in setup.py
+
 # Code cleaning
 black
 isort
 
 # Code
-pandas
+sklearn
 
 # Testing
 codecov

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - `utility.uniform_timeseries_length`
+- [`sklearn`][sklearn] is no longer a dependency
 
 ### Fixed
 - Bugs in `conversion.to_timeseries_dataset` and `conversion.to_sklearn_dataset`
