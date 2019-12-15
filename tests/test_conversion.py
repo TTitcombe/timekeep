@@ -266,35 +266,105 @@ class TestTimeseriesTransformer:
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_all_dims_provided(
         self,
     ):
-        data = pd.DataFrame(np.arange(120).reshape((10, 12)))
+        data = pd.DataFrame(
+            np.array(
+                [
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                    [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                ]
+            )
+        )
+
         converted_data = to_timeseries_dataset(data, t=6, d=2)
 
-        assert converted_data.shape == (10, 6, 2)
-        assert_array_equal(converted_data, np.arange(120).reshape((10, 6, 2)))
+        assert_array_equal(
+            converted_data,
+            np.array(
+                [
+                    [[0, 6], [1, 7], [2, 8], [3, 9], [4, 10], [5, 11]],
+                    [[12, 18], [13, 19], [14, 20], [15, 21], [16, 22], [17, 23]],
+                ]
+            ),
+        )
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_t_provided(self):
-        data = pd.DataFrame(np.arange(120).reshape((10, 12)))
+        data = pd.DataFrame(
+            np.array(
+                [
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                    [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                ]
+            )
+        )
         converted_data = to_timeseries_dataset(data, t=4)
 
-        assert converted_data.shape == (10, 4, 3)
-        assert_array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+        assert_array_equal(
+            converted_data,
+            np.array(
+                [
+                    [[0, 4, 8], [1, 5, 9], [2, 6, 10], [3, 7, 11]],
+                    [[12, 16, 20], [13, 17, 21], [14, 18, 22], [15, 19, 23]],
+                ]
+            ),
+        )
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_provided(self):
-        data = pd.DataFrame(np.arange(120).reshape(10, 12))
+        data = pd.DataFrame(
+            np.array(
+                [
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                    [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                ]
+            )
+        )
+
         converted_data = to_timeseries_dataset(data, d=3)
 
-        assert converted_data.shape == (10, 4, 3)
-        assert_array_equal(converted_data, np.arange(120).reshape((10, 4, 3)))
+        assert_array_equal(
+            converted_data,
+            np.array(
+                [
+                    [[0, 4, 8], [1, 5, 9], [2, 6, 10], [3, 7, 11]],
+                    [[12, 16, 20], [13, 17, 21], [14, 18, 22], [15, 19, 23]],
+                ]
+            ),
+        )
 
     def test_to_timeseries_dataset_converts_sklearn_dataset_with_d_equal_to_one_when_no_dims_provided(
         self,
     ):
-        data = np.arange(120).reshape(10, 12)
+        data = pd.DataFrame(
+            np.array(
+                [
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                    [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                ]
+            )
+        )
+
         converted_data = to_timeseries_dataset(data)
 
-        assert converted_data.shape == (10, 12, 1)
         assert_array_equal(
-            converted_data, np.expand_dims(np.arange(120).reshape((10, 12)), axis=2)
+            converted_data,
+            np.array(
+                [
+                    [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]],
+                    [
+                        [12],
+                        [13],
+                        [14],
+                        [15],
+                        [16],
+                        [17],
+                        [18],
+                        [19],
+                        [20],
+                        [21],
+                        [22],
+                        [23],
+                    ],
+                ]
+            ),
         )
 
     def test_to_timeseries_dataset_raises_value_error_if_data_format_not_recognised(
