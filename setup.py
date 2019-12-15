@@ -24,5 +24,5 @@ setup(
     packages=["timekeep"],
     install_requires=["numpy", "sklearn", "pandas"],
     include_package_data=True,
-    python_requires=">=3.6"
+    python_requires=">=3.6",
 )
