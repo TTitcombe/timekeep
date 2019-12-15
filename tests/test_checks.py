@@ -257,23 +257,23 @@ class TestChecks:
         with pytest.raises(TimekeepCheckError):
             fewer_than_n_datapoints(data, 5)
 
-    def test_uniform_length_is_true_if_no_empty_values(self):
+    def test_has_uniform_length_is_true_if_no_empty_values(self):
         data = np.ones((4, 10, 2))
-        check_uniform_length(data)
+        has_uniform_length(data)
 
-    def test_uniform_length_is_true_if_all_empty_values_at_last_timestep(self):
+    def test_has_uniform_length_is_true_if_all_empty_values_at_last_timestep(self):
         data = np.ones((4, 10, 2))
         data[:, -1, :] = np.nan
-        check_uniform_length(data)
+        has_uniform_length(data)
 
-    def test_uniform_length_raises_if_different_empty_value_locations(self):
+    def test_has_uniform_length_raises_if_different_empty_value_locations(self):
         data = np.ones((4, 10, 2))
         data[0, -1, :] = np.nan
 
         with pytest.raises(TimekeepCheckError):
-            check_uniform_length(data)
+            has_uniform_length(data)
 
     def test_empty_values_must_be_contiguous_for_uniform_length(self):
         data = np.ones((4, 10, 2))
         data[0, :-1, :] = np.nan
-        check_uniform_length(data)
+        has_uniform_length(data)

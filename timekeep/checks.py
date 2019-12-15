@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from .exceptions import TimekeepCheckError
-from .utility import find_stop_indices
+from .utility import get_timeseries_lengths
 
 
 def is_timeseries_dataset(data):
@@ -333,8 +333,7 @@ def fewer_than_n_datapoints(data, n):
         )
 
 
-def check_uniform_length(data):
-    lengths = find_stop_indices(data, empty_value=np.nan)
+def has_uniform_length(data):
     """
     Check that each timeseries in a dataset has the same length
 
@@ -348,6 +347,8 @@ def check_uniform_length(data):
     TimekeepCheckError
         If data contains timeseries with different lengths
     """
+    lengths = get_timeseries_lengths(data, empty_value=np.nan)
+
     if not np.unique(lengths).size == 1:
         raise TimekeepCheckError(
             "check_uniform_length: timeseries in data are not uniform length"
