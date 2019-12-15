@@ -139,7 +139,10 @@ class TestTimeseriesTransformer:
             }
         )
         converted_data = to_stacked_dataset(to_flat_dataset(data))
-        assert_frame_equal(converted_data, data)
+        assert_frame_equal(
+            converted_data.sort_values(["id", "kind", "time"]).reset_index(drop=True),
+            data,
+        )
 
     def test_to_stacked_dataset_can_accept_stacked_dataset(self):
         data = pd.DataFrame(
@@ -302,7 +305,7 @@ class TestTimeseriesTransformer:
 
     def test_timeseries_to_sklearn_to_timeseries_return_same_array(self):
         data = np.random.random((18, 26, 4))
-        converted_data = to_timeseries_dataset(to_sklearn_dataset(data))
+        converted_data = to_timeseries_dataset(to_sklearn_dataset(data), d=4)
         assert_array_equal(converted_data, data)
 
     def test_to_sklearn_dataset_converts_timeseries_dataset(self):

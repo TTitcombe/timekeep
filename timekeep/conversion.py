@@ -322,7 +322,7 @@ def to_timeseries_dataset(
         elif d is None:
             d = int(total_size / (n * t))
 
-        return data.reshape((n, t, d))
+        return data.T.reshape((d, t, n)).T
 
 
 def to_sklearn_dataset(data) -> np.ndarray:
