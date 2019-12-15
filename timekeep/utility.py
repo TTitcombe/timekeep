@@ -4,7 +4,7 @@ Functions for managing timeseries
 import numpy as np
 
 
-def find_stop_indices(data: np.ndarray, empty_value=np.nan) -> np.ndarray:
+def get_timeseries_lengths(data: np.ndarray, empty_value=np.nan) -> np.ndarray:
     """
     Find the indices in the time dimension at which each timeseries in data
     ends.
@@ -47,8 +47,3 @@ def find_stop_indices(data: np.ndarray, empty_value=np.nan) -> np.ndarray:
         end_indices[timeseries_num] = timeseries_end
 
     return end_indices
-
-
-def uniform_timeseries_length(data: np.ndarray, empty_value: int = 0.0) -> bool:
-    end_indices = find_stop_indices(data, empty_value=empty_value)
-    return np.unique(end_indices).size == 1

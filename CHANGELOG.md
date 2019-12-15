@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Renamed `utility.find_stop_indices` to `utility.get_timeseries_lengths`
+- Renamed `checks.check_uniform_length` to `checks.has_uniform_length`
+- Renamed `decorators.uniform_length` to `decorators.has_uniform_length`
+
+### Removed
+- `utility.uniform_timeseries_length`
+
+### Fixed
+- Bugs in `conversion.to_timeseries_dataset` and `conversion.to_sklearn_dataset`
+  conversion format
+
 ## [0.2.0] - 2019-12-04
 ### Added
 - Checks for dataset format
@@ -32,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Non-full timeseries
 - Decorators for all checks
 
-[Unreleased]: https://github.com/TTitcombe/timekeep/compare/0.1...HEAD
+[Unreleased]: https://github.com/TTitcombe/timekeep/compare/0.2.0...HEAD
 [0.1.0]: https://github.com/TTitcombe/timekeep/releases/tag/0.1
 [0.2.0]: https://github.com/TTitcombe/timekeep/releases/tag/0.2.0
 
